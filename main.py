@@ -6,6 +6,8 @@ class Git:
 	
 	@classmethod
 	def setRoot(cls, root):
+		if root is '':
+			raise Exception('Using the current directory is currently not supported')
 		cls.root = root
 		folder = Folder(root)
 		folder.status()	# Check if the root is a git repository
@@ -46,7 +48,7 @@ class GitFile(object):
 		return Folder(self._path[:-1]) if os.sep in self._path else None
 		
 	def status(self):
-		return Git.call(['status', self.path])
+		return Git.call(['status', self.path, '--short'])
 
 	def history(self):
 		lines = Git.call(['log', '--pretty=format:"%H"', self.path]).split('\n')
@@ -107,7 +109,7 @@ class File(GitFile):
 			raise Exception('%s is not a folder'%self.name)
 
 
-folder = Git.setRoot('/home/chiel/Documents/gitcover')
+folder = Git.setRoot('')
 print(folder.history()[0].pr())
 print(len(folder.history()), len(folder.get('README.md').history()))
 print(folder.get('README.md').status())
