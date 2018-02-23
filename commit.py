@@ -40,10 +40,7 @@ class Commit:
 	def getDiff(self) -> None:
 		if self._diff:
 			return
-		out = gitfs.Git.call(['diff', self.sha + '^', self.sha])
-		#TODO
-		#print(out)
-		self._diff = Diff(out)
+		self._diff = Diff(gitfs.Git.call(['diff', self.sha + '^', self.sha]))
 		
 	def author(self) -> str:
 		if not self._author:
