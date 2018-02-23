@@ -20,7 +20,7 @@ class Git(object):
 		if root is '':
 			raise Exception('Using the current directory is currently not supported')
 		cls.root = root
-		folder = Folder(root)
+		folder = GitFolder(root)
 		folder.status()	# Check if the root is a git repository
 		return folder
 		
@@ -54,7 +54,7 @@ class Git(object):
 
 	def history(self) -> List[Commit]:
 		lines = self.call(['log', '--pretty=format:"%H"', self.path]).split('\n')
-		return list(map(lambda h: commit.Commit(h.replace('"', '')), lines))	
+		return list(map(lambda h: Commit(h.replace('"', '')), lines))	
 
 
 
@@ -88,7 +88,7 @@ class GitFolder(Git):
 				if os.path.isdir(fname):
 					folder = GitFolder(fname)
 					self._children[f] = folder
-					seflf._folders[f] = folder				
+					self._folders[f] = folder				
 				else:
 					fil = GitFile(fname)
 					self._children[f] = fil
