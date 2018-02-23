@@ -2,6 +2,7 @@ import subprocess, os
 from typing import Dict, List
 
 from commit import Commit
+from diff import Diff
 
 
 class Git(object):
@@ -76,6 +77,9 @@ class GitFile(Git):
 		else:
 			raise Exception('%s is not a folder'%self.name)
 	
+	def changes(self) -> List[Diff]:
+		return list(map(lambda commit: commit.getDiff(file=self.path), self.history()))
+ 
 	def forEachFile(self, lamb):
 		lamb(self)
 
