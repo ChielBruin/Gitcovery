@@ -14,6 +14,11 @@ class Git(object):
 		else:
 			self._path = ''
 			self.name = path
+			
+	@classmethod
+	def _verifyRoot(cls):
+		if not cls.root:
+			raise Exception('Please set the git root first')
 
 	@classmethod
 	def setRoot(cls, root: str) -> 'GitFolder':
@@ -26,8 +31,7 @@ class Git(object):
 		
 	@classmethod
 	def call(cls, cmds:List[str]) -> str:
-		if not cls.root:
-			raise Exception('Please set the git root first')
+		cls._verifyRoot()
 		
 		try:
 			return subprocess.check_output(['git'] + cmds, stderr=subprocess.STDOUT, cwd=cls.root).decode()
@@ -45,6 +49,9 @@ class Git(object):
 	@property
 	def parent(self) -> 'GitFolder'	:
 		return GitFolder(self._path[:-1]) if os.sep in self._path else None
+	
+	def forEachFile(self, lamb):
+		raise Exception('Method not implemented for class')
 	
 	def get(self, path: str) -> 'GitFile':
 		raise Exception('Method not implemented for class')
@@ -68,6 +75,9 @@ class GitFile(Git):
 			return self
 		else:
 			raise Exception('%s is not a folder'%self.name)
+	
+	def forEachFile(self, lamb):
+		lamb(self)
 
 
 
@@ -122,4 +132,7 @@ class GitFolder(Git):
 				return self.children[fpath]
 		raise Exception('File %s%s%s not found'%(self.path, os.sep, fpath))
 
+	def forEachFile(self, lamb):
+		for fname in self.children:
+			self.children[fname].forEachFile(lamb)
 
