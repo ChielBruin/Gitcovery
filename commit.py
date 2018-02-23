@@ -29,6 +29,8 @@ class Commit:
 		self._author     = matcher.group('author')
 		self._authorMail = matcher.group('authorMail')
 		dateString       = matcher.group('commitDate')
+		
+		# This might break when the git andsystem languages are not the same.
 		self._commitDate = datetime.datetime.strptime(dateString, '%a %b %d %H:%M:%S %Y %z').date()
 		self._title      = matcher.group('title')
 		self._msg        = matcher.group('message') if matcher.group('message') else ''
