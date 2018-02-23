@@ -4,7 +4,7 @@ Proof of concept of a Python module that allows you to explore git repositories.
 It abstracts over the git system, making it useful when (for example) running analyses on repositories.
 
 ## Usage
-The idea is that you would be able to explore a repository in the following ways:
+This module wraps the git repository in the following ways, making it simple to get data from it without parsing the commandline. Note that functions related to getting the diffs(`changes()`) are not fully implemented
 
 ```python
 git = Git.setRoot('path/to/repo')
@@ -29,3 +29,10 @@ print(folder.get('a/file').status())
 # Print the name of all the files
 git.forEachFile(lambda x: print(x.path))
 ```
+
+## Future work
+- Make it an actual module
+- Add the implementation for diffs
+- Exclude files in .gitignores
+- Improve the status output
+- Add tests
