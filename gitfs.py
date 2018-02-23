@@ -89,12 +89,18 @@ class GitFolder(Git):
 	def __init__(self, path: str) -> None:
 		super(GitFolder, self).__init__(path)
 		assert os.path.isdir(path) is True, '%s must be a folder'%path
+		
+		self._children = {}
+		self._files = {}
+		self._folders = {}
 			
 	@property
 	def children(self) -> Dict[str, Git]:
 		if not self._children:
 			for f in os.listdir(self.path):
 				fname = self.path + os.sep + f
+				if '.git' in fname:
+					continue
 				if os.path.isdir(fname):
 					folder = GitFolder(fname)
 					self._children[f] = folder
