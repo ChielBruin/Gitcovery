@@ -18,13 +18,12 @@ class Commit:
 	def getData(self) -> None:
 		if self._author:
 			return
-		out = gitfs.Git.call(['log', '-n', '1', self.sha, '--pretty=fuller'])
-		matcher = re.search('Author:\s*(?P<author>.+)\s*<(?P<authorMail>.+@.+)>\n.*\n.*\n' +
-					  'CommitDate:\s*(?P<commitDate>.+)\n\n' +
-					  '\s*(?P<title>.+)(\n\s*\n(?P<message> (.*\n*)+))?', out)
+		out = gitfs.Git.call(['show', '--pretty=fuller', self.sha])
+		matcher = re.search('Author:\s*(?P<author>.+)\s*<(?P<authorMail>.+@.+)>\n.*\n.*\nCommitDate:\s*(?P<commitDate>.+)\n\n' +
+							'\s*(?P<title>.+)((\n\s*)*(?P<message>(.*\n)*))?(?P<diff>diff (.*\n)*)', out)
 					
 		if not matcher:
-			raise Exception('git log output could not be matched: ' + out)
+			raise Exception('git show output could not be matched: ' + out + '\n\nIf you are sure this should be matched, please report the output so I can improve the regex')
 			  
 		self._author     = matcher.group('author')
 		self._authorMail = matcher.group('authorMail')
@@ -35,12 +34,9 @@ class Commit:
 		self._title      = matcher.group('title')
 		self._msg        = matcher.group('message') if matcher.group('message') else ''
 		
+		self._diff = Diff.fromString(matcher.group('diff'))
+		
 		self.data = True
-	
-	def getDiff(self) -> None:
-		if self._diff:
-			return
-		self._diff = Diff.fromString(gitfs.Git.call(['diff', self.sha + '^', self.sha]))
 		
 	def author(self) -> str:
 		if not self._author:
@@ -69,7 +65,7 @@ class Commit:
 
 	def changes(self, fileName=None) -> Diff:
 		if not self._diff:
-			self.getDiff()
+			self.getData()
 		
 		if fileName:
 			return self._diff.getFile(fileName)
