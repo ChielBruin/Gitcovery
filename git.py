@@ -39,6 +39,8 @@ class Git(object):
 	
 	@classmethod
 	def getCommit(cls, sha: str) -> Commit:
+		if not sha:
+			raise Exception('Invalid sha \'%s\''%sha)
 		if sha in cls._commits:
 			return cls._commits[sha]
 		else:
