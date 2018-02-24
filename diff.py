@@ -1,11 +1,13 @@
 import re
 
 class FileDiff(object):
-	def __init__(self, fname, nums, diff):
+	def __init__(self, fname, diff):
 		self.name = fname
-		self.nums = nums
-		self.diff = diff
-		#print(fname, nums, diff)
+		self.raw = []
+		matchIter = re.finditer('@@ (?P<nums>-[0-9]+,[0-9]+ \+[0-9]+,[0-9]+) @@\s(?P<diff>.*\n([\s+-].*\n*)*)', diff)
+		for match in matchIter:
+			self.raw.append((match.group('nums'), match.group('diff')))
+		print(fname, self.raw)
 		
 	def __len__(self):
 		#TODO
@@ -22,13 +24,11 @@ class Diff(object):
 	
 	@staticmethod
 	def fromString(data):	
-		matchIter = re.finditer('diff --git a/(?P<fname>.*) b/(?P=fname)(\nnew file mode .*)*\nindex.*\n--- (a/(?P=fname)|/dev/null)\n\+\+\+ b/(?P=fname)\n'+
-								'@@ (?P<nums>-[0-9]+,[0-9]+ \+[0-9]+,[0-9]+) @@\s(?P<diff>.*\n([\s+-].*\n*)*)', data)
+		matchIter = re.finditer('diff --git a/(?P<fname>.*) b/(?P=fname)(\nnew file mode .*)*\nindex.*\n'+ 
+								'--- (a/(?P=fname)|/dev/null)\n\+\+\+ b/(?P=fname)\n(?P<diff>@@ (.*\n)*)', data)
 		obj = Diff()
 		for matcher in matchIter:
-			diff = FileDiff(matcher.group('fname'),
-				matcher.group('nums'),
-				matcher.group('diff'))
+			diff = FileDiff(matcher.group('fname'), matcher.group('diff'))
 			obj.add(diff)
 		return obj
 		
