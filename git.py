@@ -39,7 +39,12 @@ class Git(object):
 	
 	@classmethod
 	def getCommit(cls, sha: str) -> Commit:
-		return cls._commits[sha]
+		if sha in cls._commits:
+			return cls._commits[sha]
+		else:
+			commit = Commit(sha)
+			cls._commits[sha] = commit
+			return commit
 	
 	@classmethod
 	def hasCommit(cls, sha: str) -> bool:
