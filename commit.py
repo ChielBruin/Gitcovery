@@ -13,7 +13,7 @@ class Commit:
 	_diff = None
 	
 	def __init__(self, sha: str) -> None:
-		self.sha = sha
+		self.sha = sha.replace('"', '')
 		
 	def getData(self) -> None:
 		if self._author:
@@ -40,7 +40,7 @@ class Commit:
 	def getDiff(self) -> None:
 		if self._diff:
 			return
-		self._diff = Diff(gitfs.Git.call(['diff', self.sha + '^', self.sha]))
+		self._diff = Diff.fromString(gitfs.Git.call(['diff', self.sha + '^', self.sha]))
 		
 	def author(self) -> str:
 		if not self._author:

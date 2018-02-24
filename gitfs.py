@@ -1,11 +1,11 @@
-import subprocess, os
+import os
 from typing import Dict, List
 
+from git import Git
 from commit import Commit
 from diff import Diff
 
-
-class Git(object):
+class AbsGitFile(object):
 	def __init__(self, path: str) -> None:
 		assert os.path.exists(path) is True, 'The file %s does not exist'%path
 		if os.sep in path:
@@ -15,30 +15,6 @@ class Git(object):
 		else:
 			self._path = ''
 			self.name = path
-			
-	@classmethod
-	def _verifyRoot(cls):
-		if not cls.root:
-			raise Exception('Please set the git root first')
-
-	@classmethod
-	def setRoot(cls, root: str) -> 'GitFolder':
-		if root is '':
-			raise Exception('Using the current directory is currently not supported')
-		cls.root = root
-		folder = GitFolder(root)
-		folder.status()	# Check if the root is a git repository
-		return folder
-		
-	@classmethod
-	def call(cls, cmds:List[str]) -> str:
-		cls._verifyRoot()
-		
-		try:
-			return subprocess.check_output(['git'] + cmds, stderr=subprocess.STDOUT, cwd=cls.root).decode()
-		except subprocess.CalledProcessError as e:
-			print(e.cmd, e.output.decode())
-			exit(-1)
 
 	@property
 	def path(self) -> str:
@@ -58,15 +34,22 @@ class Git(object):
 		raise Exception('Method not implemented for class')
 	
 	def status(self) -> str:
-		return self.call(['status', self.path, '--short'])
+		return Git.call(['status', self.path, '--short'])
 
 	def history(self) -> List[Commit]:
-		lines = self.call(['log', '--pretty=format:"%H"', self.path]).split('\n')
-		return list(map(lambda h: Commit(h.replace('"', '')), lines))	
+		lines = Git.call(['log', '--pretty=format:"%H"', self.path]).split('\n')
+		
+		res = [None] * len(lines)
+		for i, sha in enumerate(lines):
+			if Git.hasCommit(sha):
+				res[i] = Git.getCommit(sha)
+			else:
+				commit = Commit(sha)
+				res[i] = commit
+				Git.registerCommit(commit)
+		return res
 
-
-
-class GitFile(Git):
+class GitFile(AbsGitFile):
 	def __init__(self, path: str) -> None:
 		super(GitFile, self).__init__(path)
 		assert os.path.isfile(path) is True, '%s must be a file'%path
@@ -85,7 +68,7 @@ class GitFile(Git):
 
 
 
-class GitFolder(Git):
+class GitFolder(AbsGitFile):
 	_children = {}
 	_files = {}
 	_folders = {}
