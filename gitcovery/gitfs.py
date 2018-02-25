@@ -80,6 +80,9 @@ class GitFile(AbsGitFile):
 	def forEachFile(self, lamb):
 		lamb(self)
 
+	def __str__(self):
+		with open(self.path) as f: 
+			return f.read()
 
 
 class GitFolder(AbsGitFile):
@@ -164,3 +167,5 @@ class GitFolder(AbsGitFile):
 		for fname in self.children:
 			self.children[fname].forEachFile(lamb)
 
+	def __str__(self):
+		return ', '.join(list(map(lambda x: x + '/', self.folders.keys())) + list(self.files.keys()))
