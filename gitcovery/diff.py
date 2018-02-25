@@ -11,7 +11,7 @@ class FileDiff(object):
 		
 	def __len__(self):
 		#TODO
-		return len(diff)
+		return len(self.raw)
 
 class Diff(object):
 	def __init__(self):

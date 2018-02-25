@@ -8,6 +8,7 @@ Now, the module can simply be imported with
 ``` python
 from gitcovery import Git
 ```
+To run the tests for the module run: `python3 setup.py test`
 
 ## Usage
 This module wraps the git repository in the following ways, making it simple to get data from it without parsing the commandline. Note that functions related to getting the diffs(`changes()`) are not fully implemented
