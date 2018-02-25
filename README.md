@@ -45,5 +45,4 @@ For more examples see `example.py`
 ## Future work
 - Improve the implementation for diffs  
   It now only contains the raw diff for each file, lacking the desired level of abstraction
-- Exclude files in `.gitignore` files
 - Add tests
