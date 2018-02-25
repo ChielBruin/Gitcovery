@@ -7,7 +7,9 @@ It abstracts over the git system, making it useful when (for example) running an
 This module wraps the git repository in the following ways, making it simple to get data from it without parsing the commandline. Note that functions related to getting the diffs(`changes()`) are not fully implemented
 
 ```python
-git = Git.setRoot('path/to/repo')
+git = Git.setRoot('path/to/repo')                                       # Select local dir
+git = Git.clone('/tmp', 'https://github.com/ChielBruin/Gitcovery.git')  # Clone and select remote dir
+git = Git.checkout('<branch>')
 commit = Git.getCommit('<commitHash>')
 
 # Get the files in the tests folder
@@ -31,6 +33,8 @@ print(folder.get('a/file.txt').status())
 # Print the name of all the files
 git.forEachFile(lambda x: print(x.path))
 ```
+
+For more examples see `example.py`
 
 ## Future work
 - Improve the implementation for diffs

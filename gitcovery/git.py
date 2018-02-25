@@ -1,15 +1,28 @@
-import subprocess
+import subprocess, re, os
 from typing import Dict, List
 
 from .commit import Commit
 
 class Git(object):
 	_commits = {}
+	root = ''
 	
 	@classmethod
 	def _verifyRoot(cls):
 		if not cls.root:
 			raise Exception('Please set the git root first')
+
+	@classmethod
+	def clone(cls, loc: str, addr: str) -> 'GitFolder':
+		cls.call(['clone', addr], root=loc)
+		name = re.search('/(?P<name>[^/]+)\.git$', addr).group('name')
+		return cls.setRoot(loc + os.sep + name)
+
+	@classmethod
+	def checkout(cls, name: str) -> 'GitFolder':
+		cls._verifyRoot()
+		cls.call(['checkout', name])
+		return GitFolder(cls.root)
 
 	@classmethod
 	def setRoot(cls, root: str) -> 'GitFolder':
@@ -22,11 +35,12 @@ class Git(object):
 		return folder
 		
 	@classmethod
-	def call(cls, cmds:List[str]) -> str:
-		cls._verifyRoot()
-		
+	def call(cls, cmds:List[str], root=None) -> str:
 		try:
-			return subprocess.check_output(['git'] + cmds, stderr=subprocess.STDOUT, cwd=cls.root).decode()
+			if not root:
+				cls._verifyRoot()
+				root = cls.root
+			return subprocess.check_output(['git'] + cmds, stderr=subprocess.STDOUT, cwd=root).decode()
 		except subprocess.CalledProcessError as e:
 			print(e.cmd, e.output.decode())
 			exit(-1)
