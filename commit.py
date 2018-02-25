@@ -7,6 +7,9 @@ from diff import Diff
 class Commit:
 	_author = ''
 	_authorMail = ''
+	_authorDate = ''
+	_commit = ''
+	_commitMail = ''
 	_commitDate = ''
 	_title = ''
 	_msg = ''
@@ -19,7 +22,8 @@ class Commit:
 		if self._author:
 			return
 		out = gitfs.Git.call(['show', '--pretty=fuller', self.sha])
-		matcher = re.search('Author:\s*(?P<author>.+)\s*<(?P<authorMail>.+@.+)>\n.*\n.*\nCommitDate:\s*(?P<commitDate>.+)\n\n' +
+		matcher = re.search('Author:\s*(?P<author>.+)\s*<(?P<authorMail>.+@.+)>\nAuthorDate: (?P<authorDate>.*)\n'+ 
+							'Commit: (?P<commit> .*) <(?P<commitMail>.*@.*)>\nCommitDate:\s*(?P<commitDate>.+)\n\n' + 
 							'\s*(?P<title>.+)((\n\s*)*(?P<message>(.*\n)*))?(?P<diff>diff (.*\n)*)', out)
 					
 		if not matcher:
@@ -48,6 +52,21 @@ class Commit:
 			self.getData()
 		return self._authorMail
 
+	def authorDate(self) -> datetime.date:
+		if not self._authorDate:
+			self.getData()
+		return self._authorDate
+		
+	def commit(self) -> str:
+		if not self._commit:
+			self.getData()
+		return self._commit
+		
+	def commitMail(self) -> str:
+		if not self._commitMail:
+			self.getData()
+		return self._commitMail
+		
 	def commitDate(self) -> datetime.date:
 		if not self._commitDate:
 			self.getData()
