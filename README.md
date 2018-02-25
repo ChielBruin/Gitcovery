@@ -3,7 +3,11 @@
 A Python3 module that allows you to explore git repositories. It abstracts over the git system, hiding the command-line arguments behind simple function calls and objects. This makes the module useful when (for example) running analyses on git repositories.
 
 ## Installation
-To install the module simply run `pip3 install .` in the root of this repository. Now, the module can simply be imported with `from gitcovery import Git`.
+To install the module simply run `pip3 install .` in the root of this repository.  
+Now, the module can simply be imported with 
+``` python
+from gitcovery import Git
+```
 
 ## Usage
 This module wraps the git repository in the following ways, making it simple to get data from it without parsing the commandline. Note that functions related to getting the diffs(`changes()`) are not fully implemented
@@ -39,7 +43,7 @@ git.forEachFile(lambda x: print(x.path))
 For more examples see `example.py`
 
 ## Future work
-- Improve the implementation for diffs
+- Improve the implementation for diffs  
   It now only contains the raw diff for each file, lacking the desired level of abstraction
-- Exclude files in .gitignores
+- Exclude files in `.gitignore` files
 - Add tests
