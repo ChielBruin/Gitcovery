@@ -1,9 +1,7 @@
 import subprocess
-import gitfs
-
 from typing import Dict, List
-from commit import Commit
 
+from .commit import Commit
 
 class Git(object):
 	_commits = {}
@@ -18,7 +16,8 @@ class Git(object):
 		if root is '':
 			raise Exception('Using the current directory is currently not supported')
 		cls.root = root
-		folder = gitfs.GitFolder(root)
+		from .gitfs import GitFolder
+		folder = GitFolder(root)
 		folder.status()	# Check if the root is a git repository
 		return folder
 		

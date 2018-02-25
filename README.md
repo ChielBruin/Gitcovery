@@ -33,8 +33,6 @@ git.forEachFile(lambda x: print(x.path))
 ```
 
 ## Future work
-- Make it an actual module
-- Add the implementation for diffs
+- Improve the implementation for diffs
 - Exclude files in .gitignores
-- Improve the status output
 - Add tests

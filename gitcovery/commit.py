@@ -1,8 +1,6 @@
 import re, datetime
 
-import gitfs
-from diff import Diff
-
+from .diff import Diff
 
 class Commit:
 	_author = ''
@@ -21,7 +19,9 @@ class Commit:
 	def getData(self) -> None:
 		if self._author:
 			return
-		out = gitfs.Git.call(['show', '--pretty=fuller', self.sha])
+		
+		from .git import Git
+		out = Git.call(['show', '--pretty=fuller', self.sha])
 		matcher = re.search('Author:\s*(?P<author>.+)\s*<(?P<authorMail>.+@.+)>\nAuthorDate: (?P<authorDate>.*)\n'+ 
 							'Commit: (?P<commit> .*) <(?P<commitMail>.*@.*)>\nCommitDate:\s*(?P<commitDate>.+)\n\n' + 
 							'\s*(?P<title>.+)((\n\s*)*(?P<message>(.*\n)*))?(?P<diff>diff (.*\n)*)', out)

@@ -1,9 +1,9 @@
 import os, re
 from typing import Dict, List
 
-from git import Git
-from commit import Commit
-from diff import Diff
+from .git import Git
+from .commit import Commit
+from .diff import Diff
 
 class AbsGitFile(object):
 	def __init__(self, path: str) -> None:
@@ -71,7 +71,7 @@ class GitFile(AbsGitFile):
 		status = super().status()
 		if not status:
 			return '-'
-		firstLetter = status()
+		firstLetter = status[0]
 		return 'N' if firstLetter is '?' else firstLetter
 	
 	def changes(self) -> List[Diff]:
@@ -96,11 +96,11 @@ class GitFolder(AbsGitFile):
 		self._folders = {}
 			
 	@property
-	def children(self) -> Dict[str, Git]:
+	def children(self) -> Dict[str, AbsGitFile]:
 		if not self._children:
 			for f in os.listdir(self.path):
 				fname = self.path + os.sep + f
-				if '.git' in fname:
+				if '.git' in fname:	
 					continue
 				if os.path.isdir(fname):
 					folder = GitFolder(fname)
