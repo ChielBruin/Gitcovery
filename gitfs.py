@@ -1,4 +1,4 @@
-import os
+import os, re
 from typing import Dict, List
 
 from git import Git
@@ -34,7 +34,14 @@ class AbsGitFile(object):
 		raise Exception('Method not implemented for class')
 	
 	def status(self) -> str:
-		return Git.call(['status', self.path, '--short'])
+		'''
+		Get a string representing the status of the file.
+		The following statuses can be used: M (modified), N (new), D (removed), - (unchanged)
+		When multiple statusses apply, return a concatenation of distinct statuses.
+		'''
+		out = Git.call(['status', self.path, '--short'])
+		list = re.split('\n\s*', out[1:] if out.startswith(' ') else out)[:-1]
+		return ', '.join(list)
 
 	def history(self) -> List[Commit]:
 		lines = Git.call(['log', '--pretty=format:"%H"', self.path]).split('\n')
@@ -59,6 +66,13 @@ class GitFile(AbsGitFile):
 			return self
 		else:
 			raise Exception('%s is not a folder'%self.name)
+	
+	def status(self):
+		status = super().status()
+		if not status:
+			return '-'
+		firstLetter = status()
+		return 'N' if firstLetter is '?' else firstLetter
 	
 	def changes(self) -> List[Diff]:
 		return list(map(lambda commit: commit.getDiff(file=self.path), self.history()))
@@ -114,7 +128,14 @@ class GitFolder(AbsGitFile):
 		if name in self.folders:
 			return self.folders[name]
 		raise Exception('Folder %s not found'%name)
-		
+	
+	def status(self):
+		status = super().status()
+		if not status:
+			return '-'
+		firstLetters = map(lambda x: x[0], status.split(', '))
+		return ''.join(set(map(lambda l: 'N' if l is '?' else l, firstLetters)))
+
 	def get(self, fpath: str) -> GitFile:
 		if os.sep in fpath:
 			folder = fpath[:fpath.index(os.sep)]
