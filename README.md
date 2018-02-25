@@ -1,4 +1,5 @@
 # Gitcovery
+[![Build Status](https://travis-ci.org/ChielBruin/Gitcovery.svg?branch=master)](https://travis-ci.org/ChielBruin/Gitcovery)
 
 A Python3 module that allows you to explore git repositories. It abstracts over the git system, hiding the command-line arguments behind simple function calls and objects. This makes the module useful when (for example) running analyses on git repositories.
 
