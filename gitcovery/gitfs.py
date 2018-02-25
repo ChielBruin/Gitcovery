@@ -86,24 +86,38 @@ class GitFolder(AbsGitFile):
 	_children = {}
 	_files = {}
 	_folders = {}
+	_gitignore = []
 	
-	def __init__(self, path: str) -> None:
+	def __init__(self, path: str, gitignore=[]) -> None:
 		super(GitFolder, self).__init__(path)
 		assert os.path.isdir(path) is True, '%s must be a folder'%path
 		
 		self._children = {}
 		self._files = {}
 		self._folders = {}
+		self._gitignore = gitignore + ['\.git']
+	
+	def _appendGitignore(self):
+		with open(self.path + os.sep + '.gitignore') as f:  
+			for line in f.read().split('\n'):
+				if line:
+					line = line.replace('.', '\.').replace('*', '.*')
+					self._gitignore.append(line[:-1] if line.endswith(os.sep) else line)
 			
 	@property
 	def children(self) -> Dict[str, AbsGitFile]:
 		if not self._children:
-			for f in os.listdir(self.path):
+			files = os.listdir(self.path)
+			if '.gitignore' in files:
+				self._appendGitignore()
+
+			for f in files:
 				fname = self.path + os.sep + f
-				if '.git' in fname:	
+				regex = '\Z|'.join(self._gitignore)
+				if re.search(regex, f):
 					continue
 				if os.path.isdir(fname):
-					folder = GitFolder(fname)
+					folder = GitFolder(fname, gitignore=self._gitignore)
 					self._children[f] = folder
 					self._folders[f] = folder				
 				else:
