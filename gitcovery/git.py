@@ -2,9 +2,11 @@ import subprocess, re, os
 from typing import Dict, List
 
 from .commit import Commit
+from .author import Author
 
 class Git(object):
 	_commits = {}
+	_authors = {}
 	root = ''
 	
 	@classmethod
@@ -60,7 +62,23 @@ class Git(object):
 			commit = Commit(sha)
 			cls._commits[sha] = commit
 			return commit
-	
+
 	@classmethod
 	def hasCommit(cls, sha: str) -> bool:
 		return sha in cls._commits
+
+	
+	@classmethod
+	def authors(cls) -> List[Author]:
+		print(cls._authors)
+		return cls._authors.values()
+		
+	@classmethod
+	def getAuthor(cls, name: str, email='') -> Author:
+		name = name.strip()
+		if not name in cls._authors:
+			if email:
+				cls._authors[name] = Author(name, email)
+			else:
+				raise Exception('Author <%s> not known, did you load all commits (as you are reading from cached values)?'%name)
+		return cls._authors[name]

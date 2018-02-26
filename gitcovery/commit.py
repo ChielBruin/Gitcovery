@@ -3,11 +3,9 @@ import re, datetime
 from .diff import Diff
 
 class Commit:
-	_author = ''
-	_authorMail = ''
+	_author = None
 	_authorDate = ''
-	_commit = ''
-	_commitMail = ''
+	_commit = None
 	_commitDate = ''
 	_title = ''
 	_msg = ''
@@ -16,7 +14,7 @@ class Commit:
 	def __init__(self, sha: str) -> None:
 		self.sha = sha.replace('"', '')
 		
-	def getData(self) -> None:
+	def load(self) -> None:
 		if self._author:
 			return
 		
@@ -29,62 +27,52 @@ class Commit:
 		if not matcher:
 			raise Exception('git show output could not be matched: ' + out + '\n\nIf you are sure this should be matched, please report the output so I can improve the regex')
 			  
-		self._author     = matcher.group('author')
-		self._authorMail = matcher.group('authorMail')
-		dateString       = matcher.group('commitDate')
+		self._author = Git.getAuthor(matcher.group('author'), email=matcher.group('authorMail'))
+		self._commit = Git.getAuthor(matcher.group('commit'), email=matcher.group('commitMail'))
+		
+		self._author.registerCommit(self)
 		
 		# This might break when the git and system languages are not the same.
-		self._commitDate = datetime.datetime.strptime(dateString, '%a %b %d %H:%M:%S %Y %z').date()
+		self._authorDate = datetime.datetime.strptime(matcher.group('authorDate'), '%a %b %d %H:%M:%S %Y %z').date()
+		self._commitDate = datetime.datetime.strptime(matcher.group('commitDate'), '%a %b %d %H:%M:%S %Y %z').date()
+		
 		self._title      = matcher.group('title')
 		self._msg        = matcher.group('message') if matcher.group('message') else ''
-		
 		self._diff = Diff.fromString(matcher.group('diff'))
 		
-		self.data = True
-		
-	def author(self) -> str:
+	def author(self) -> 'Author':
 		if not self._author:
-			self.getData()
+			self.load()
 		return self._author
-
-	def authorMail(self) -> str:
-		if not self._authorMail:
-			self.getData()
-		return self._authorMail
 
 	def authorDate(self) -> datetime.date:
 		if not self._authorDate:
-			self.getData()
+			self.load()
 		return self._authorDate
 		
-	def commit(self) -> str:
+	def commit(self) -> 'Author':
 		if not self._commit:
-			self.getData()
+			self.load()
 		return self._commit
-		
-	def commitMail(self) -> str:
-		if not self._commitMail:
-			self.getData()
-		return self._commitMail
 		
 	def commitDate(self) -> datetime.date:
 		if not self._commitDate:
-			self.getData()
+			self.load()
 		return self._commitDate
 
 	def title(self) -> str:
 		if not self._title:
-			self.getData()
+			self.load()
 		return self._title
 
 	def msg(self) -> str:
 		if not self._msg:
-			self.getData()
+			self.load()
 		return self._msg
 
 	def changes(self, fileName=None) -> Diff:
 		if not self._diff:
-			self.getData()
+			self.load()
 		
 		if fileName:
 			return self._diff.getFile(fileName)

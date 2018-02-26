@@ -7,7 +7,7 @@ class FileDiff(object):
 		matchIter = re.finditer('@@ (?P<nums>-[0-9]+,[0-9]+ \+[0-9]+,[0-9]+) @@\s(?P<diff>.*\n([\s+-].*\n*)*)', diff)
 		for match in matchIter:
 			self.raw.append((match.group('nums'), match.group('diff')))
-		print(fname, self.raw)
+		#print(fname, self.raw)
 		
 	def __len__(self):
 		#TODO
