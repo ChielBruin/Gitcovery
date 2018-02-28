@@ -30,7 +30,13 @@ class AbsGitFile(object):
 	def forEachFile(self, lamb):
 		raise Exception('Method not implemented for class')
 	
-	def get(self, path: str) -> 'GitFile':
+	def getFile(self, path: str) -> 'GitFile':
+		raise Exception('Method not implemented for class')
+	
+	def getFolder(self, path: str) -> 'GitFolder':
+		raise Exception('Method not implemented for class')
+	
+	def get(self, path: str) -> 'AbsGitFile':
 		raise Exception('Method not implemented for class')
 	
 	def status(self) -> str:
@@ -61,11 +67,17 @@ class GitFile(AbsGitFile):
 		super(GitFile, self).__init__(path)
 		assert os.path.isfile(path) is True, '%s must be a file'%path
 
-	def get(self, fpath:str) -> 'GitFile':
+	def getFile(self, fpath:str) -> 'GitFile':
 		if fpath is self.name:
 			return self
 		else:
-			raise Exception('%s is not a folder'%self.name)
+			raise Exception('%s is not a file'%self.name)
+			
+	def get(self, path:str) -> 'GitFile':
+		return self.getFile(path)
+	
+	def getFolder(self, path:str):
+		raise Exception('Folders cannot be inside files')
 	
 	def status(self):
 		status = super().status()
@@ -165,7 +177,7 @@ class GitFolder(AbsGitFile):
 		firstLetters = map(lambda x: x[0], status.split(', '))
 		return ''.join(set(map(lambda l: 'N' if l is '?' else l, firstLetters)))
 
-	def get(self, fpath: str) -> GitFile:
+	def get(self, fpath: str) -> AbsGitFile:
 		if os.sep in fpath:
 			folder = fpath[:fpath.index(os.sep)]
 			if folder in self.children:
@@ -175,6 +187,20 @@ class GitFolder(AbsGitFile):
 				return self.children[fpath]
 		raise Exception('File %s%s%s not found'%(self.path, os.sep, fpath))
 
+	def getFile(self, path:str):
+		f = self.get(path)
+		if type(f) is GitFile:
+			return f
+		else:
+			raise Exception('%s is not a file'%path)
+			
+	def getFolder(self, path:str):
+		f = self.get(path)
+		if type(f) is GitFolder:
+			return f
+		else:
+			raise Exception('%s is not a folder'%path)
+		
 	def forEachFile(self, lamb):
 		for fname in self.children:
 			self.children[fname].forEachFile(lamb)
