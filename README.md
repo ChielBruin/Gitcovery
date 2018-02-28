@@ -28,15 +28,15 @@ folder = git.src.tests.children()           # Functionally equivalent
 print(git.history()[0].author())
 
 # Get changes made to a file in the last commit
-print(git.get('README.md').history()[0].changes(file='README.md'))
-print(git.get('README.md').history()[0].changes().getFile('README.md'))
-print(git.get('README.md').changes()[0])
+print(git.getFile('README.md').history()[0].changes(file='README.md'))
+print(git.getFile('README.md').history()[0].changes().getFile('README.md'))
+print(git.getFile('README.md').changes()[0])
 
 # Compare the length of the full history with the length of that of the 'README.md' file
 print(len(git.history()), len(git.get('README.md').history()))
 
 # Get the status of a file
-print(folder.get('a/file.txt').status())
+print(folder.getFile('a/file.txt').status())
 
 # Print the name of all the files
 git.forEachFile(lambda x: print(x.path))

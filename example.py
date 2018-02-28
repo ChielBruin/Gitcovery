@@ -7,8 +7,8 @@ folder = Git.setRoot('.')
 
 history = folder.history()
 print(history[0].changes())
-print(folder.get('README.md').at(history[0]))
-print(len(folder.history()), len(folder.get('README.md').history()))
+print(folder.getFile('README.md').at(history[0]))
+print(len(folder.history()), len(folder.getFile('README.md').history()))
 
 for commit in history:
 	d = commit.changes()
