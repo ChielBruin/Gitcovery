@@ -21,7 +21,7 @@ git = Git.checkout('<branch>')
 commit = Git.getCommit('<commitHash>')
 
 # Get the files in the tests folder
-folder = git.get('src/tests').children()
+folder = git.getFolder('src/tests').children()
 folder = git.src.tests.children()           # Functionally equivalent
 
 # Get the author of the latest commit
@@ -46,5 +46,5 @@ For more examples see `example.py`
 
 ## Future work
 - Improve the implementation for diffs  
-  It now only contains the raw diff for each file, lacking the desired level of abstraction
+  It now only records the metadata, making it impossible to reconstruct a file using all the Diffs in his history (except for its size).
 - Add tests
