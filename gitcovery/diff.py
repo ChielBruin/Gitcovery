@@ -1,17 +1,36 @@
 import re
 
+class BlobDiff(object):
+	'''
+	Class representing a code blob in the diff of a file.
+	'''
+	def __init__(self, nums, lines):
+		#TODO: Store the actual diff data somehow
+		self.added = []
+		self.removed = []
+		
+		for line in lines.split('\n'):
+			if line.startswith('+'):
+				self.added.append(line)
+			if line.startswith('-'):
+				self.removed.append(line)
+
+	def __len__(self):
+		return len(self.added) + len(self.removed)
+
 class FileDiff(object):
 	def __init__(self, fname, diff):
 		self.name = fname
-		self.raw = []
+		self.blobs = []
 		matchIter = re.finditer('@@ (?P<nums>-[0-9]+,[0-9]+ \+[0-9]+,[0-9]+) @@\s(?P<diff>.*\n([\s+-].*\n*)*)', diff)
 		for match in matchIter:
-			self.raw.append((match.group('nums'), match.group('diff')))
-		#print(fname, self.raw)
+			self.blobs.append(BlobDiff(match.group('nums'), match.group('diff')))
 		
 	def __len__(self):
-		#TODO
-		return len(self.raw)
+		total = 0
+		for blob in self.blobs:
+			total += len(blob)
+		return total
 
 class Diff(object):
 	def __init__(self):
@@ -36,4 +55,7 @@ class Diff(object):
 		return self.data[fname]
 
 	def __len__(self):
-		return len(self.data)
+		total = 0
+		for fname in self.data:
+			total += len(self.data[fname])
+		return total
