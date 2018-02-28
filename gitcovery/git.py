@@ -7,6 +7,7 @@ from .author import Author
 class Git(object):
 	_commits = {}
 	_authors = {}
+	_tags = None
 	root = ''
 	
 	@classmethod
@@ -37,15 +38,18 @@ class Git(object):
 		return folder
 		
 	@classmethod
-	def call(cls, cmds:List[str], root=None) -> str:
+	def call(cls, cmds:List[str], root=None, killOnError=True) -> str:
 		try:
 			if not root:
 				cls._verifyRoot()
 				root = cls.root
 			return subprocess.check_output(['git'] + cmds, stderr=subprocess.STDOUT, cwd=root).decode()
 		except subprocess.CalledProcessError as e:
-			print(e.cmd, e.output.decode())
-			exit(-1)
+			if killOnError:
+				print(e.cmd, e.output.decode())
+				exit(-1)
+			else:
+				return e.output.decode()
 			
 	@classmethod
 	def registerCommit(cls, commit: Commit) -> None:
@@ -82,3 +86,26 @@ class Git(object):
 			else:
 				raise Exception('Author <%s> not known, did you load all commits (as you are reading from cached values)?'%name)
 		return cls._authors[name]
+	
+	@classmethod
+	def getTags(cls):
+		'''
+		Get a list of all the tags of this project. 
+		These tags can directly be passed to 'Git.getTag()'
+		'''
+		if 	cls._tags is None:
+			cls._tags = {}
+			out = cls.call(['show-ref', '--tags'], killOnError=False)		# A repo without tags gives an error
+			matcher = re.finditer('(?P<commit>[0-9a-z]+) refs/tags/(?P<tag>.*)', out)
+			for match in matcher:
+				cls._tags[match.group('tag')] = cls.getCommit(match.group('commit'))
+		return list(cls._tags.keys())
+		
+	@classmethod
+	def getTag(cls, tag):
+		'''
+		Get the Commit associated with the given tag.
+		'''
+		if 	cls._tags is None:
+			cls.getTags()
+		return cls._tags[tag]
