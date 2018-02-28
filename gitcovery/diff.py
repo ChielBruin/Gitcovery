@@ -1,6 +1,37 @@
 import re
 
-class BlobDiff(object):
+class _Diffable(object):
+	def __init__(self, diffs):
+		self._diffs = diffs
+
+	def __len__(self):
+		'''
+		Get the number of changed lines in this Diff
+		'''
+		total = 0
+		for d in self._diffs:
+			total += len(d)
+		return total
+	
+	def numAdded(self):
+		'''
+		Get the number of added lines in this Diff
+		'''
+		total = 0
+		for d in self._diffs:
+			total += d.numAdded()
+		return total
+	
+	def numRemoved(self):
+		'''
+		Get the number of removed lines in this Diff
+		'''
+		total = 0
+		for d in self._diffs:
+			total += d.numRemoved()
+		return total
+
+class BlobDiff(_Diffable):
 	'''
 	Class representing a code blob in the diff of a file.
 	'''
@@ -16,30 +47,33 @@ class BlobDiff(object):
 				self.removed.append(line)
 
 	def __len__(self):
+		#TODO: This counts duplicates
 		return len(self.added) + len(self.removed)
 
-class FileDiff(object):
+	def numAdded(self):
+		return len(self.added)
+
+	def numRemoved(self):
+		return len(self.removed)
+
+class FileDiff(_Diffable):
 	def __init__(self, fname, diff):
+		super(FileDiff, self).__init__([])
 		self.name = fname
-		self.blobs = []
 		matchIter = re.finditer('@@ (?P<nums>-[0-9]+,[0-9]+ \+[0-9]+,[0-9]+) @@\s(?P<diff>.*\n([\s+-].*\n*)*)', diff)
 		for match in matchIter:
-			self.blobs.append(BlobDiff(match.group('nums'), match.group('diff')))
-		
-	def __len__(self):
-		total = 0
-		for blob in self.blobs:
-			total += len(blob)
-		return total
+			self._diffs.append(BlobDiff(match.group('nums'), match.group('diff')))
 
-class Diff(object):
+class Diff(_Diffable):
 	def __init__(self):
+		super(Diff, self).__init__([])
 		self.data = {}
 		
 	def add(self, fileDiff):
 		if fileDiff.name in self.data:
 			raise Exception('Diff already present for ' + fname)
 		self.data[fileDiff.name] = fileDiff
+		self._diffs.append(fileDiff)
 	
 	@staticmethod
 	def fromString(data):	
@@ -53,9 +87,3 @@ class Diff(object):
 		
 	def getFile(self, fname: str) -> 'Diff':
 		return self.data[fname]
-
-	def __len__(self):
-		total = 0
-		for fname in self.data:
-			total += len(self.data[fname])
-		return total
