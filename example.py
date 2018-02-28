@@ -4,10 +4,10 @@ from gitcovery import Git
 folder = Git.setRoot('.')
 #folder = Git.clone('/tmp', 'https://github.com/ChielBruin/Gitcovery.git')
 
-print(folder.get('README.md'))
 
 history = folder.history()
 print(history[0].changes())
+print(folder.get('README.md').at(history[0]))
 print(len(folder.history()), len(folder.get('README.md').history()))
 
 folder.forEachFile(lambda x: print(x.status(), x.path))

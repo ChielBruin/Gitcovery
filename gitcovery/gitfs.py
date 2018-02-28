@@ -80,6 +80,18 @@ class GitFile(AbsGitFile):
 	def forEachFile(self, lamb):
 		lamb(self)
 
+	def at(self, commit):
+		'''
+		Get the contents of this file at the given commit.
+		The argument can be either the commit hash as a string or a Commit object.
+		'''
+		if (type(commit) is str):
+			sha = commit
+		else:
+			sha = commit.sha
+		
+		return Git.call(['show', '%s:%s'%(sha, self.path)])
+		
 	def __str__(self):
 		with open(self.path) as f: 
 			return f.read()
