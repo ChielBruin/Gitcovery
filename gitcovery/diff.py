@@ -76,7 +76,9 @@ class Diff(_Diffable):
 		self._diffs.append(fileDiff)
 	
 	@staticmethod
-	def fromString(data):	
+	def fromString(data):
+		if not data:
+			return Diff()
 		matchIter = re.finditer('diff --git a/(?P<fname>.*) b/(?P=fname)(\nnew file mode .*)*\nindex.*\n'+ 
 								'--- (a/(?P=fname)|/dev/null)\n\+\+\+ b/(?P=fname)\n(?P<diff>@@ (.*\n)*)', data)
 		obj = Diff()
