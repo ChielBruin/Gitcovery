@@ -8,6 +8,7 @@ class Git(object):
 	_commits = {}
 	_authors = {}
 	_tags = None
+	_initialCommits = []
 	root = ''
 	
 	@classmethod
@@ -109,3 +110,14 @@ class Git(object):
 		if 	cls._tags is None:
 			cls.getTags()
 		return cls._tags[tag]
+
+	@classmethod
+	def getInitialCommits(cls):
+		'''
+		Get the initial commits of this repository.
+		Note that it is possible to have multiple roots, therefore a list is returned.
+		'''
+		if not cls._initialCommits:
+			out = cls.call(['rev-list',  '--max-parents=0', 'HEAD'])
+			cls._initialCommits = map(lambda x: cls.getCommit(x), out.split('\n')[0:-1])
+		return cls._initialCommits
