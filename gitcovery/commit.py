@@ -2,19 +2,24 @@ import re, datetime
 
 from .diff import Diff
 
-class Commit:
-	_author = None
-	_authorDate = ''
-	_commit = None
-	_commitDate = ''
-	_title = ''
-	_msg = ''
-	_diff = None
-	
-	def __init__(self, sha: str) -> None:
+class Commit:	
+	def __init__(self, sha, preload=False):
 		self.sha = sha.replace('"', '')
+		self._author = None
+		self._authorDate = ''
+		self._commit = None
+		self._commitDate = ''
+		self._title = ''
+		self._msg = ''
+		self._diff = None
+		self._parents = []
+		self._children = []
 		
-	def load(self) -> None:
+		
+		if preload:
+			self.load()
+		
+	def load(self):
 		if self._author:
 			return
 		
@@ -39,41 +44,33 @@ class Commit:
 		self._title      = matcher.group('title')
 		self._msg        = matcher.group('message') if matcher.group('message') else ''
 		self._diff = Diff.fromString(matcher.group('diff'))
-		
-	def author(self) -> 'Author':
-		if not self._author:
-			self.load()
+
+	def author(self):
+		self.load()
 		return self._author
 
-	def authorDate(self) -> datetime.date:
-		if not self._authorDate:
-			self.load()
+	def authorDate(self):
+		self.load()
 		return self._authorDate
 		
-	def commit(self) -> 'Author':
-		if not self._commit:
-			self.load()
+	def commit(self):
+		self.load()
 		return self._commit
 		
-	def commitDate(self) -> datetime.date:
-		if not self._commitDate:
-			self.load()
+	def commitDate(self):
+		self.load()
 		return self._commitDate
 
-	def title(self) -> str:
-		if not self._title:
-			self.load()
+	def title(self):
+		self.load()
 		return self._title
 
-	def msg(self) -> str:
-		if not self._msg:
-			self.load()
+	def msg(self):
+		self.load()
 		return self._msg
 
-	def changes(self, fileName=None) -> Diff:
-		if not self._diff:
-			self.load()
-		
+	def changes(self, fileName=None):
+		self.load()
 		if fileName:
 			return self._diff.getFile(fileName)
 		else:
