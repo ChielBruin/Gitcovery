@@ -5,6 +5,7 @@ folder = Git.setRoot('.')
 #folder = Git.clone('/tmp', 'https://github.com/ChielBruin/Gitcovery.git')
 
 
+print('Initial commits by:', ', '.join(map(lambda x: x.author().name, Git.getInitialCommits())))
 history = folder.history()
 print(history[0].changes())
 print(folder.getFile('README.md').at(history[0]))
