@@ -22,6 +22,16 @@ class AbsGitFile(object):
 			return self._path + os.sep + self.name
 		else:
 			return self.name
+			
+	@property
+	def relativePath(self):
+		'''
+		Get the path relative to the repository root
+		'''
+		if self._path:
+			return (self._path + os.sep + self.name).replace(Git.root if Git.root.endswith('/') else Git.root + '/', '')
+		else:
+			return self.name
 	
 	@property
 	def parent(self) -> 'GitFolder'	:
@@ -102,7 +112,7 @@ class GitFile(AbsGitFile):
 		else:
 			sha = commit.sha
 		
-		return Git.call(['show', '%s:%s'%(sha, self.path)])
+		return Git.call(['show', '%s:%s'%(sha, self.relativePath)])
 		
 	def __str__(self):
 		with open(self.path) as f: 
