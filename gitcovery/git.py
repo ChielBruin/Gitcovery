@@ -103,6 +103,16 @@ class Git(object):
 		return list(cls._tags.keys())
 		
 	@classmethod
+	def getTagsByCommit(cls):
+		'''
+		Get a list of all the tags and their commit in the following format:
+		[(Commit, tag), ...]
+		'''
+		if 	cls._tags is None:
+			cls.getTags()
+		return list(map(lambda tag: (cls._tags[tag], tag), cls._tags.keys()))
+		
+	@classmethod
 	def getTag(cls, tag):
 		'''
 		Get the Commit associated with the given tag.
