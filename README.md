@@ -42,7 +42,7 @@ print(folder.getFile('a/file.txt').status())
 git.forEachFile(lambda x: print(x.path))
 ```
 
-For more examples see `example.py`
+More examples are located in the `examples` folder. For example, try running `python3 examples/graphs.py` from the root of this repository to see the evolution of the file size of this README.
 
 ## Future work
 - Improve the implementation for diffs  
