@@ -1,3 +1,4 @@
+from __future__ import print_function
 from gitcovery import Git
 
 
@@ -19,9 +20,5 @@ for commit in history:
 # Make sure to load all commits before getting author data
 print(len(Git.getAuthor('Chiel Bruin').commits))
 
-
-def output(status, fname):
-	print(status, fname)
-
-folder.forEachFile(lambda x: output(x.status(), x.path))
+folder.forEachFile(lambda x: print(x.status(), x.path))
 
