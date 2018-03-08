@@ -19,4 +19,9 @@ for commit in history:
 # Make sure to load all commits before getting author data
 print(len(Git.getAuthor('Chiel Bruin').commits))
 
-folder.forEachFile(lambda x: print(x.status(), x.path))
+
+def output(status, fname):
+	print(status, fname)
+
+folder.forEachFile(lambda x: output(x.status(), x.path))
+

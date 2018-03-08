@@ -1,12 +1,10 @@
 import os, re
-from typing import Dict, List
-
 from .git import Git
 from .commit import Commit
-from .diff import Diff
+
 
 class AbsGitFile(object):
-	def __init__(self, path: str) -> None:
+	def __init__(self, path):
 		assert os.path.exists(path) is True, 'The file %s does not exist'%path
 		if os.sep in path:
 			idx = len(path) - 1 - path[::-1].index('/')
@@ -17,7 +15,7 @@ class AbsGitFile(object):
 			self.name = path
 
 	@property
-	def path(self) -> str:
+	def path(self):
 		if self._path:
 			return self._path + os.sep + self.name
 		else:
@@ -34,22 +32,22 @@ class AbsGitFile(object):
 			return self.name
 	
 	@property
-	def parent(self) -> 'GitFolder'	:
+	def parent(self):
 		return GitFolder(self._path[:-1]) if os.sep in self._path else None
 	
 	def forEachFile(self, lamb):
 		raise Exception('Method not implemented for class')
 	
-	def getFile(self, path: str) -> 'GitFile':
+	def getFile(self, path):
 		raise Exception('Method not implemented for class')
 	
-	def getFolder(self, path: str) -> 'GitFolder':
+	def getFolder(self, path):
 		raise Exception('Method not implemented for class')
 	
-	def get(self, path: str) -> 'AbsGitFile':
+	def get(self, path):
 		raise Exception('Method not implemented for class')
 	
-	def status(self) -> str:
+	def status(self):
 		'''
 		Get a string representing the status of the file.
 		The following statuses can be used: M (modified), N (new), D (removed), - (unchanged)
@@ -59,7 +57,7 @@ class AbsGitFile(object):
 		list = re.split('\n\s*', out[1:] if out.startswith(' ') else out)[:-1]
 		return ', '.join(list)
 
-	def history(self) -> List[Commit]:
+	def history(self):
 		lines = Git.call(['log', '--pretty=format:"%H"', self.path]).split('\n')
 		
 		res = [None] * len(lines)
@@ -73,30 +71,30 @@ class AbsGitFile(object):
 		return res
 
 class GitFile(AbsGitFile):
-	def __init__(self, path: str) -> None:
+	def __init__(self, path):
 		super(GitFile, self).__init__(path)
 		assert os.path.isfile(path) is True, '%s must be a file'%path
 
-	def getFile(self, fpath:str) -> 'GitFile':
+	def getFile(self, fpath):
 		if fpath is self.name:
 			return self
 		else:
 			raise Exception('%s is not a file'%self.name)
 			
-	def get(self, path:str) -> 'GitFile':
+	def get(self, path):
 		return self.getFile(path)
 	
-	def getFolder(self, path:str):
+	def getFolder(self, path):
 		raise Exception('Folders cannot be inside files')
 	
 	def status(self):
-		status = super().status()
+		status = super(GitFile, self).status()
 		if not status:
 			return '-'
 		firstLetter = status[0]
-		return 'N' if firstLetter is '?' else firstLetter
+		return 'N' if firstLetter == '?' else firstLetter
 	
-	def changes(self) -> List[Diff]:
+	def changes(self):
 		return list(map(lambda commit: commit.getDiff(file=self.path), self.history()))
  
 	def forEachFile(self, lamb):
@@ -131,7 +129,7 @@ class GitFolder(AbsGitFile):
 	_folders = {}
 	_gitignore = []
 	
-	def __init__(self, path: str, gitignore=[]) -> None:
+	def __init__(self, path, gitignore=[]):
 		super(GitFolder, self).__init__(path)
 		assert os.path.isdir(path) is True, '%s must be a folder'%path
 		
@@ -148,7 +146,7 @@ class GitFolder(AbsGitFile):
 					self._gitignore.append(line[:-1] if line.endswith(os.sep) else line)
 			
 	@property
-	def children(self) -> Dict[str, AbsGitFile]:
+	def children(self):
 		if not self._children:
 			files = os.listdir(self.path)
 			if '.gitignore' in files:
@@ -170,30 +168,30 @@ class GitFolder(AbsGitFile):
 		return self._children
 		
 	@property
-	def files(self) -> Dict[str, GitFile]:
+	def files(self):
 		if not self._files:
 			self.children
 		return self._files
 		
 	@property
-	def folders(self) -> Dict[str, 'GitFolder']:
+	def folders(self):
 		if not self._folders:
 			self.children
 		return self._folders
 		
-	def __getattr__(self, name: str) -> 'GitFolder':
+	def __getattr__(self, name):
 		if name in self.folders:
 			return self.folders[name]
 		raise Exception('Folder %s not found'%name)
 	
 	def status(self):
-		status = super().status()
+		status = super(GitFolder, self).status()
 		if not status:
 			return '-'
 		firstLetters = map(lambda x: x[0], status.split(', '))
-		return ''.join(set(map(lambda l: 'N' if l is '?' else l, firstLetters)))
+		return ''.join(set(map(lambda l: 'N' if l == '?' else l, firstLetters)))
 
-	def get(self, fpath: str) -> AbsGitFile:
+	def get(self, fpath):
 		if os.sep in fpath:
 			folder = fpath[:fpath.index(os.sep)]
 			if folder in self.children:
@@ -203,14 +201,14 @@ class GitFolder(AbsGitFile):
 				return self.children[fpath]
 		raise Exception('File %s%s%s not found'%(self.path, os.sep, fpath))
 
-	def getFile(self, path:str):
+	def getFile(self, path):
 		f = self.get(path)
 		if type(f) is GitFile:
 			return f
 		else:
 			raise Exception('%s is not a file'%path)
 			
-	def getFolder(self, path:str):
+	def getFolder(self, path):
 		f = self.get(path)
 		if type(f) is GitFolder:
 			return f

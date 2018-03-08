@@ -9,8 +9,7 @@ setup(name='gitcovery',
       license='',
       packages=['gitcovery'],
       install_requires=[
-	      'datetime',
-          'typing'
+	      'dateutil'
       ],
       zip_safe=False,
       test_suite='nose.collector',

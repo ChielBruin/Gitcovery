@@ -87,5 +87,5 @@ class Diff(_Diffable):
 			obj.add(diff)
 		return obj
 		
-	def getFile(self, fname: str) -> 'Diff':
+	def getFile(self, fname):
 		return self.data[fname]

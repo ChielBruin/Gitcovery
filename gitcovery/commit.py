@@ -1,8 +1,11 @@
-import re, datetime
+import re
+from dateutil import parser as dateParser
 
+from .git import Git
 from .diff import Diff
 
-class Commit:	
+
+class Commit(object):	
 	def __init__(self, sha, preload=False):
 		self.sha = sha.replace('"', '')
 		self._author = None
@@ -23,7 +26,6 @@ class Commit:
 		if self._author:
 			return
 		
-		from .git import Git
 		out = Git.call(['show', '--pretty=format:%P%n%an%n%ae%n%ai%n%cn%n%ce%n%ci%n%s%n%b', self.sha])
 		matcher = re.search('(?P<parents>([a-f0-9\s]+\s?)*)\n'+ 
 							'(?P<author>.+)\n(?P<authorMail>.+@.+)\n(?P<authorDate>[0-9\-]+ [0-9:]+ [+\-0-9]+)\n' +
@@ -34,7 +36,7 @@ class Commit:
 			raise Exception('git show output could not be matched: ' + out + '\n\nIf you are sure this should be matched, please report the output so I can improve the regex')
 		
 		for sha in matcher.group('parents').split(' '):
-			if sha is '':
+			if sha == '':
 				continue
 			commit = Git.getCommit(sha)
 			self._parents.append(commit)
@@ -45,9 +47,9 @@ class Commit:
 		
 		self._author.registerCommit(self)
 		
-		self._authorDate = datetime.datetime.strptime(matcher.group('authorDate'), '%Y-%m-%d %H:%M:%S %z').date()
-		self._commitDate = datetime.datetime.strptime(matcher.group('commitDate'), '%Y-%m-%d %H:%M:%S %z' ).date()
-		
+		self._authorDate = dateParser.parse(matcher.group('authorDate'))
+		self._commitDate = dateParser.parse(matcher.group('commitDate'))
+
 		self._title      = matcher.group('title')
 		self._msg        = matcher.group('message') if matcher.group('message') else ''
 		self._diff = Diff.fromString(matcher.group('diff'))
@@ -104,3 +106,12 @@ class Commit:
 		other.load()
 		
 		return self.authorDate() < other.authorDate()
+		
+	def forEachParent(self, func):
+		'''
+		Execute a function for this commit and all its parents (AKA the tree that this commit is part of).
+		'''
+		func(self)
+		
+		for child in self.parents():
+			child.forEachChild(func)
