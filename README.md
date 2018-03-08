@@ -1,15 +1,15 @@
 # Gitcovery
 [![Build Status](https://travis-ci.org/ChielBruin/Gitcovery.svg?branch=master)](https://travis-ci.org/ChielBruin/Gitcovery)
 
-A Python3 module that allows you to explore git repositories. It abstracts over the git system, hiding the command-line arguments behind simple function calls and objects. This makes the module useful when (for example) running analyses on git repositories.
+A Python module that allows you to explore git repositories. It abstracts over the git system, hiding the command-line arguments behind simple function calls and objects. This makes the module useful when (for example) running analyses on git repositories.
 
 ## Installation
-To install the module simply run `pip3 install .` in the root of this repository.  
+To install the module simply run `pip install .` in the root of this repository.  
 Now, the module can simply be imported with 
 ``` python
 from gitcovery import Git
 ```
-To run the tests for the module run: `python3 setup.py test`
+To run the tests for the module run: `python setup.py test`
 
 ## Usage
 This module wraps the git repository in the following ways, making it simple to get data from it without parsing the commandline. Note that functions related to getting the diffs(`changes()`) are not fully implemented
@@ -42,7 +42,7 @@ print(folder.getFile('a/file.txt').status())
 git.forEachFile(lambda x: print(x.path))
 ```
 
-More examples are located in the `examples` folder. For example, try running `python3 examples/graphs.py` from the root of this repository to see the evolution of the file size of this README.
+More examples are located in the `examples` folder. For example, try running `python examples/graphs.py` from the root of this repository to see the evolution of the file size of this README.
 
 ## Future work
 - Improve the implementation for diffs  
