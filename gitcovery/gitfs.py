@@ -113,7 +113,13 @@ class GitFile(AbsGitFile):
 			sha = commit.sha
 		
 		return Git.call(['show', '%s:%s'%(sha, self.relativePath)])
-		
+	
+	def countAt(self, pattern, commit):
+		'''
+		Count the number of occurances af the pattern at the specified commit.
+		'''
+		return self.at(commit).count(pattern)
+	
 	def __str__(self):
 		with open(self.path) as f: 
 			return f.read()
