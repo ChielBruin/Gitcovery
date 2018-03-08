@@ -98,3 +98,9 @@ class Commit:
 		'''
 		self.load()
 		return self._children
+
+	def __lt__(self, other):
+		self.load()
+		other.load()
+		
+		return self.authorDate() < other.authorDate()
