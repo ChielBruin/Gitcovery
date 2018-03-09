@@ -1,18 +1,11 @@
 # Gitcovery
 [![Build Status](https://travis-ci.org/ChielBruin/Gitcovery.svg?branch=master)](https://travis-ci.org/ChielBruin/Gitcovery)
 
-A Python module that allows you to explore git repositories. It abstracts over the git system, hiding the command-line arguments behind simple function calls and objects. This makes the module useful when (for example) running analyses on git repositories.
-
-## Installation
-To install the module simply run `pip install .` in the root of this repository.  
-Now, the module can simply be imported with 
-``` python
-from gitcovery import Git
-```
-To run the tests for the module run: `python setup.py test`
+A Python module that allows you to explore git repositories. It abstracts over the git system, hiding the command-line arguments behind simple function calls and objects. This makes the module useful when you want to run analyses on git repositories.  
+As an example of its simplicity, only 6 lines of Python code are needed to create a graph that shows evolution of the number of lines in this README-file over time. This includes the two lines that are always needed to draw any graph at all. Try running `python examples/graphs.py` from the root of this repository to check it out, or take a look at the other examples in the `exmples` folder.
 
 ## Usage
-This module wraps the git repository in the following ways, making it simple to get data from it without parsing the commandline. Note that functions related to getting the diffs(`changes()`) are not fully implemented
+This module wraps the git repository in the following ways, making it simple to get data from it without parsing the commandline output.
 
 ```python
 git = Git.setRoot('path/to/repo')                                       # Select local dir
@@ -42,9 +35,17 @@ print(folder.getFile('a/file.txt').status())
 git.forEachFile(lambda x: print(x.path))
 ```
 
-More examples are located in the `examples` folder. For example, try running `python examples/graphs.py` from the root of this repository to see the evolution of the file size of this README.
+## Installation
+To install the module simply run `pip install .` in the root of this repository.  
+Now, the module can simply be imported with 
+``` python
+from gitcovery import Git
+```
+To run the tests for the module run: `python setup.py test`
 
 ## Future work
 - Improve the implementation for diffs  
   It now only records the metadata, making it impossible to reconstruct a file using all the Diffs in his history (except for its size).
 - Add tests
+- More documentation
+- More examples
