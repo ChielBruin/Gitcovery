@@ -47,5 +47,6 @@ To run the tests for the module run: `python setup.py test`
 - Improve the implementation for diffs  
   It now only records the metadata, making it impossible to reconstruct a file using all the Diffs in his history (except for its size).
 - Add tests
+- Run tests for both Python3 and Python2
 - More documentation
 - More examples
