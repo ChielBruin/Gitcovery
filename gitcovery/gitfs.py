@@ -62,12 +62,7 @@ class AbsGitFile(object):
 		
 		res = [None] * len(lines)
 		for i, sha in enumerate(lines):
-			if Git.hasCommit(sha):
-				res[i] = Git.getCommit(sha)
-			else:
-				commit = Commit(sha)
-				res[i] = commit
-				Git.registerCommit(commit)
+			res[i] = Git.getCommit(sha)
 		return res
 
 class GitFile(AbsGitFile):
