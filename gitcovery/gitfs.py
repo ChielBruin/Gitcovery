@@ -107,7 +107,11 @@ class GitFile(AbsGitFile):
 		else:
 			sha = commit.sha
 		
-		return Git.call(['show', '%s:%s'%(sha, self.relativePath)])
+		try:
+			return Git.call(['show', '%s:%s'%(sha, self.relativePath)], killOnError=False)
+		except:
+			# File does not exist at that commit
+			return ''
 	
 	def countAt(self, pattern, commit):
 		'''
