@@ -118,11 +118,20 @@ class GitFile(AbsGitFile):
 		Count the number of occurances af the pattern at the specified commit.
 		'''
 		return self.at(commit).count(pattern)
+
+	def regexCountAt(self, pattern, commit):
+		'''
+		Count the number of occurances af the pattern at the specified commit using a regex pattern.
+		This pattern can be compiled or a plain string, in the latter case it will be compiled for you (but this is a little slower).
+		'''
+		if type(pattern) is str:
+			pattern = re.compile(pattern)
+
+		return len(pattern.findall(self.at(commit)))
 	
 	def __str__(self):
 		with open(self.path) as f: 
 			return f.read()
-
 
 class GitFolder(AbsGitFile):
 	_children = {}
