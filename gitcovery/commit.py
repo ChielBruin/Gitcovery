@@ -5,7 +5,12 @@ from .git import Git
 from .diff import Diff
 
 
-class Commit(object):	
+class Commit(object):
+	_REGEX_COMMIT = re.compile('(?P<parents>([a-f0-9\s]+\s?)*)\n'+ 
+							   '(?P<author>.+)\n(?P<authorMail>.+@.+)\n(?P<authorDate>[0-9\-]+ [0-9:]+ [+\-0-9]+)\n' +
+							   '(?P<commit>.+)\n(?P<commitMail>.+@.+)\n(?P<commitDate>[0-9\-]+ [0-9:]+ [+\-0-9]+)\n' +
+							   '(?P<title>.*)(?P<message>(.*\n)*)?\n(?P<diff>diff (.*\n)*)?')
+
 	def __init__(self, sha, preload=False):
 		self.sha = sha.replace('"', '')
 		self._author = None
@@ -27,10 +32,7 @@ class Commit(object):
 			return
 		
 		out = Git.call(['show', '--pretty=format:%P%n%an%n%ae%n%ai%n%cn%n%ce%n%ci%n%s%n%b', self.sha])
-		matcher = re.search('(?P<parents>([a-f0-9\s]+\s?)*)\n'+ 
-							'(?P<author>.+)\n(?P<authorMail>.+@.+)\n(?P<authorDate>[0-9\-]+ [0-9:]+ [+\-0-9]+)\n' +
-							'(?P<commit>.+)\n(?P<commitMail>.+@.+)\n(?P<commitDate>[0-9\-]+ [0-9:]+ [+\-0-9]+)\n' +
-							'(?P<title>.*)(?P<message>(.*\n)*)?\n(?P<diff>diff (.*\n)*)?', out)
+		matcher = self._REGEX_COMMIT.search(out)
 					
 		if not matcher:
 			raise Exception('git show output could not be matched: ' + out + '\n\nIf you are sure this should be matched, please report the output so I can improve the regex')
@@ -103,7 +105,6 @@ class Commit(object):
 
 	def __lt__(self, other):
 		self.load()
-		other.load()
 		
 		return self.authorDate() < other.authorDate()
 		

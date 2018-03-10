@@ -19,6 +19,8 @@ class Git(object):
 	_head = None
 	root = ''
 	
+	_REGEX_TAGS = re.compile('(?P<commit>[0-9a-z]+) refs/tags/(?P<tag>.*)')
+	
 	@classmethod
 	def _verifyRoot(cls):
 		'''
@@ -172,7 +174,7 @@ class Git(object):
 		if 	cls._tags is None:
 			cls._tags = {}
 			out = cls.call(['show-ref', '--tags'], killOnError=False)		# A repo without tags gives an error
-			matcher = re.finditer('(?P<commit>[0-9a-z]+) refs/tags/(?P<tag>.*)', out)
+			matcher = cls._REGEX_TAGS.finditer(out)
 			for match in matcher:
 				cls._tags[match.group('tag')] = cls.getCommit(match.group('commit'))
 		return list(cls._tags.keys())

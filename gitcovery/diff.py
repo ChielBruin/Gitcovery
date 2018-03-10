@@ -57,14 +57,19 @@ class BlobDiff(_Diffable):
 		return len(self.removed)
 
 class FileDiff(_Diffable):
+	_REGEX_FILEDIFF = re.compile('@@ (?P<nums>-[0-9]+,[0-9]+ \+[0-9]+,[0-9]+) @@\s(?P<diff>.*\n([\s+-].*\n*)*)')
+
 	def __init__(self, fname, diff):
 		super(FileDiff, self).__init__([])
 		self.name = fname
-		matchIter = re.finditer('@@ (?P<nums>-[0-9]+,[0-9]+ \+[0-9]+,[0-9]+) @@\s(?P<diff>.*\n([\s+-].*\n*)*)', diff)
+		matchIter = self._REGEX_FILEDIFF.finditer(diff)
 		for match in matchIter:
 			self._diffs.append(BlobDiff(match.group('nums'), match.group('diff')))
 
 class Diff(_Diffable):
+	_REGEX_DIFF = re.compile('diff --git a/(?P<fname>.*) b/(?P=fname)(\nnew file mode .*)*\nindex.*\n'+ 
+							 '--- (a/(?P=fname)|/dev/null)\n\+\+\+ b/(?P=fname)\n(?P<diff>@@ (.*\n)*)')
+
 	def __init__(self):
 		super(Diff, self).__init__([])
 		self.data = {}
@@ -75,12 +80,11 @@ class Diff(_Diffable):
 		self.data[fileDiff.name] = fileDiff
 		self._diffs.append(fileDiff)
 	
-	@staticmethod
-	def fromString(data):
+	@classmethod
+	def fromString(cls, data):
 		if not data:
 			return Diff()
-		matchIter = re.finditer('diff --git a/(?P<fname>.*) b/(?P=fname)(\nnew file mode .*)*\nindex.*\n'+ 
-								'--- (a/(?P=fname)|/dev/null)\n\+\+\+ b/(?P=fname)\n(?P<diff>@@ (.*\n)*)', data)
+		matchIter = cls._REGEX_DIFF.finditer(data)
 		obj = Diff()
 		for matcher in matchIter:
 			diff = FileDiff(matcher.group('fname'), matcher.group('diff'))

@@ -4,6 +4,8 @@ from .commit import Commit
 
 
 class AbsGitFile(object):
+	_REGEX_LINESPLIT = re.compile('\n\s*')
+	
 	def __init__(self, path):
 		assert os.path.exists(path) is True, 'The file %s does not exist'%path
 		if os.sep in path:
@@ -54,7 +56,7 @@ class AbsGitFile(object):
 		When multiple statusses apply, return a concatenation of distinct statuses.
 		'''
 		out = Git.call(['status', self.path, '--short'])
-		list = re.split('\n\s*', out[1:] if out.startswith(' ') else out)[:-1]
+		list = self._REGEX_LINESPLIT.split(out[1:] if out.startswith(' ') else out)[:-1]
 		return ', '.join(list)
 
 	def history(self):
@@ -132,6 +134,7 @@ class GitFolder(AbsGitFile):
 		self._files = {}
 		self._folders = {}
 		self._gitignore = gitignore + ['\.git']
+		self._REGEX_GITIGNORE = re.compile('\Z|'.join(self._gitignore))
 	
 	def _appendGitignore(self):
 		with open(self.path + os.sep + '.gitignore') as f:  
@@ -149,8 +152,7 @@ class GitFolder(AbsGitFile):
 
 			for f in files:
 				fname = self.path + os.sep + f
-				regex = '\Z|'.join(self._gitignore)
-				if re.search(regex, f):
+				if self._REGEX_GITIGNORE.search(f):
 					continue
 				if os.path.isdir(fname):
 					folder = GitFolder(fname, gitignore=self._gitignore)
