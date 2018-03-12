@@ -54,7 +54,7 @@ class Commit(object):
 
 		self._title      = matcher.group('title')
 		self._msg        = matcher.group('message') if matcher.group('message') else ''
-		self._diff = Diff.fromString(matcher.group('diff'))
+		self._diff = Diff.from_string(matcher.group('diff'))
 
 	def author(self):
 		self.load()
@@ -83,7 +83,7 @@ class Commit(object):
 	def changes(self, fileName=None):
 		self.load()
 		if fileName:
-			return self._diff.getFile(fileName)
+			return self._diff.get_file(fileName)
 		else:
 			return self._diff
 
