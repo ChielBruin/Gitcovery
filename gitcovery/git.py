@@ -120,6 +120,7 @@ class Git(object):
         :param kill_on_error: Indicates whether an error should kill the process (True by default)
         :rtype: str
         :return: The output of running the command
+        :raise IOError: When the command fails and kill_on_error==False
         """
         try:
             if not root:
@@ -131,7 +132,7 @@ class Git(object):
                 print(e.cmd, e.output.decode())
                 exit(-1)
             else:
-                raise ChildProcessError(e)
+                raise IOError(e)
 
     @classmethod
     def get_commit(cls, sha):

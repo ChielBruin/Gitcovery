@@ -80,7 +80,7 @@ class _AbsGitFile(object):
         :param path: The path of the file to get
         :rtype: GitFile
         :return: The file with the given path
-        :raise: Exception, when the file is not found
+        :raise IOError: When the file is not found
         """
         raise NotImplementedError()
 
@@ -92,7 +92,7 @@ class _AbsGitFile(object):
            :param path: The path of the folder to get
            :rtype: GitFolder
            :return: The folder with the given path
-           :raise: Exception, when the file is not found
+           :raise IOError: when the file is not found
            """
         raise NotImplementedError()
 
@@ -106,7 +106,7 @@ class _AbsGitFile(object):
         :param path: The path of the file to get
         :rtype: _AbsGitFile
         :return: The file with the given path
-        :raise: Exception, when the file is not found
+        :raise IOError: When the file is not found
         """
         raise NotImplementedError()
 
@@ -205,7 +205,7 @@ class GitFile(_AbsGitFile):
 
         try:
             return Git.call(['show', '%s:%s' % (sha, self.relative_path)], kill_on_error=False)
-        except ChildProcessError:
+        except IOError:
             # File does not exist at that commit
             return ''
 
@@ -270,13 +270,13 @@ class GitFile(_AbsGitFile):
         if fpath is self.name:
             return self
         else:
-            raise FileNotFoundError('%s is not a file' % self.name)
+            raise IOError('%s is not a file' % self.name)
 
     def get(self, path):
         return self.get_file(path)
 
     def get_folder(self, path):
-        raise NotADirectoryError('Folders cannot be inside files')
+        raise IOError('Folders cannot be inside files')
 
     def status(self):
         status = super(GitFile, self).status()
@@ -387,11 +387,11 @@ class GitFolder(_AbsGitFile):
         :param name: The name of the folder
         :rtype: GitFolder
         :return: The folder
-        :raise NotADirectoryError: When the folder is not found
+        :raise IOError: When the folder is not found
         """
         if name in self.folders():
             return self._folders[name]
-        raise NotADirectoryError('Folder %s not found' % name)
+        raise IOError('Folder %s not found' % name)
 
     def __str__(self):
         """
@@ -417,14 +417,14 @@ class GitFolder(_AbsGitFile):
         else:
             if fpath in self.children():
                 return self.children()[fpath]
-        raise FileNotFoundError('File %s%s%s not found' % (self.path, os.sep, fpath))
+        raise IOError('File %s%s%s not found' % (self.path, os.sep, fpath))
 
     def get_file(self, path):
         f = self.get(path)
         if type(f) is GitFile:
             return f
         else:
-            raise FileNotFoundError('%s is not a file' % path)
+            raise IOError('%s is not a file' % path)
 
     def get_folder(self, path):
         f = self.get(path)
