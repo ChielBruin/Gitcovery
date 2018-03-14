@@ -9,9 +9,9 @@ setup(name='gitcovery',
       license='',
       packages=['gitcovery'],
       install_requires=[
-	      'python-dateutil'
+          'python-dateutil'
       ],
       zip_safe=False,
       test_suite='nose.collector',
-	  tests_require=['nose'],
-)
+      tests_require=['nose'],
+      )

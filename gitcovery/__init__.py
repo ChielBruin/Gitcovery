@@ -2,4 +2,4 @@ from .git import Git
 from .author import Author
 from .commit import Commit
 from .diff import Diff, FileDiff
-from .gitfs import AbsGitFile, GitFile, GitFolder
+from .gitfs import GitFile, GitFolder

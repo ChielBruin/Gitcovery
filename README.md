@@ -8,31 +8,31 @@ As an example of its simplicity, only 6 lines of Python code are needed to creat
 This module wraps the git repository in the following ways, making it simple to get data from it without parsing the commandline output.
 
 ```python
-git = Git.setRoot('path/to/repo')                                       # Select local dir
+git = Git.set_root('path/to/repo')                                      # Select local dir
 git = Git.clone('/tmp', 'https://github.com/ChielBruin/Gitcovery.git')  # Clone and select remote dir
 git = Git.checkout('<branch>')
-commit = Git.getCommit('<commitHash>')
+commit = Git.get_commit('<commitHash>')
 
 # Get the files in the tests folder
-folder = git.getFolder('src/tests').children()
-folder = git.src.tests.children()           # Functionally equivalent
+folder = git.get_folder('src/tests').children()
+folder = git.src.tests.children()               # Functionally equivalent
 
 # Get the author of the latest commit
 print(git.history()[0].author())
 
 # Get changes made to a file in the last commit
-print(git.getFile('README.md').history()[0].changes(file='README.md'))
-print(git.getFile('README.md').history()[0].changes().getFile('README.md'))
-print(git.getFile('README.md').changes()[0])
+print(git.get_file('README.md').history()[0].changes(file='README.md'))
+print(git.get_file('README.md').history()[0].changes().get_file('README.md'))
+print(git.get_file('README.md').changes()[0])
 
 # Compare the length of the full history with the length of that of the 'README.md' file
 print(len(git.history()), len(git.get('README.md').history()))
 
 # Get the status of a file
-print(folder.getFile('a/file.txt').status())
+print(folder.get_file('a/file.txt').status())
 
 # Print the name of all the files
-git.forEachFile(lambda x: print(x.path))
+git.for_each_file(lambda x: print(x.path))
 ```
 
 ## Installation
