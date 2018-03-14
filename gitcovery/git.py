@@ -40,6 +40,7 @@ class Git(object):
     def clone(cls, loc, addr):
         """
         Clone a git repository to the specified location and return a reference to the root.
+        When there is already a folder with the correct name at that location, cloning is skipped.
         Calling this function is identical to calling
         `cd loc && git clone addr` and setting the root to this location.
 
@@ -50,8 +51,9 @@ class Git(object):
         :rtype: GitFolder
         :return: A reference to the root
         """
-        cls.call(['clone', addr], root=loc)
         name = re.search('/(?P<name>[^/]+)\.git$', addr).group('name')
+        if not os.path.isdir(loc + os.sep + name):
+            cls.call(['clone', addr], root=loc)
         return cls.set_root(loc + os.sep + name)
 
     @classmethod
