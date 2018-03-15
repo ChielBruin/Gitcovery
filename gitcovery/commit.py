@@ -81,6 +81,20 @@ class Commit(object):
         self._msg = matcher.group('message') if matcher.group('message') else ''
         self._diff = Diff(matcher.group('diff'))
 
+    def unload(self):
+        """
+        Unload all the cached data for this commit.
+        """
+        self._author = None
+        self._authorDate = ''
+        self._commit = None
+        self._commitDate = ''
+        self._title = ''
+        self._msg = ''
+        self._diff = None
+        self._parents = []
+        self._children = []
+
     def author(self):
         """
         :rtype: Author
