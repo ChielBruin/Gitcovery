@@ -141,8 +141,9 @@ class Diff(_DiffContainer):
     """
 
     # Regex that matches the contents of a file diff
-    _REGEX_DIFF = re.compile('diff --git a/(?P<fname>.*) b/(?P=fname)(\nnew file mode .*)*\nindex.*\n' +
-                             '--- (a/(?P=fname)|/dev/null)\n\+\+\+ b/(?P=fname)\n(?P<diff>@@ (.*\n)*)')
+    _REGEX_DIFF = re.compile('diff --git a/(?P<fname>.*) b/(?P=fname)' +
+                             '(\nnew file mode .*)*\nindex.*\n--- (a/(?P=fname)|/dev/null)\n\+\+\+ b/(?P=fname)\n' +
+                             '(?P<diff>@@.*@@(.*\n*)*?(?=\s*((diff --git)|\Z)))')
 
     def __init__(self, diffstr):
         """

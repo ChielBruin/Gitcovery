@@ -103,7 +103,7 @@ class Git(object):
         return folder
 
     @classmethod
-    def call(cls, cmds, root=None, kill_on_error=True):
+    def call(cls, cmds, root=None, kill_on_error=True, char_encoding='utf-8'):
         """
         Call the git subsystem via the command line and return the output.
         Kills the process when the call fails (unless specified otherwise).
@@ -126,7 +126,7 @@ class Git(object):
             if not root:
                 cls._verify_root()
                 root = cls.root
-            return subprocess.check_output(['git'] + cmds, stderr=subprocess.STDOUT, cwd=root).decode('utf-8')
+            return subprocess.check_output(['git'] + cmds, stderr=subprocess.STDOUT, cwd=root).decode(char_encoding)
         except subprocess.CalledProcessError as e:
             if kill_on_error:
                 print(e.cmd, e.output.decode())

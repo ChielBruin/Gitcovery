@@ -12,11 +12,10 @@ class Commit(object):
     the date of the commit, the commit message and the diff.
     """
 
-    # Regex to parse the 'git show' output
-    _REGEX_COMMIT = re.compile('(?P<parents>([a-f0-9\s]+\s?)*)\n' +
-                               '(?P<author>.+)\n(?P<authorMail>.+@.+)\n(?P<authorDate>[0-9\-]+ [0-9:]+ [+\-0-9]+)\n' +
-                               '(?P<commit>.+)\n(?P<commitMail>.+@.+)\n(?P<commitDate>[0-9\-]+ [0-9:]+ [+\-0-9]+)\n' +
-                               '(?P<title>.*)(?P<message>(.*\n)*)?\n(?P<diff>diff (.*\n)*)?')
+    _REGEX_COMMIT = re.compile('(?P<parents>([a-f0-9]+\s)*)\n' +
+                               '(?P<author>.+)\n(?P<authorMail>.+)\n(?P<authorDate>[0-9\-:\s\+]+)\n' +
+                               '(?P<commit>.+)\n(?P<commitMail>.+)\n(?P<commitDate>[0-9\-:\s\+]+)\n' +
+                               '(?P<title>.*)(?P<message>(.*\n)*?(?=(diff --git)|\Z))?(?P<diff>diff (.*\n)*)?')
 
     def __init__(self, sha, preload=False):
         """
@@ -57,8 +56,8 @@ class Commit(object):
 
         if not matcher:
             raise Exception(
-                'git show output could not be matched: %s\n\n' % out +
-                'If you are sure this should be matched, please report the output so I can improve the regex')
+                'git show output could not be matched for: %s\n' % self.sha +
+                'Please report the commit hash and repository so I can improve the regex')
 
         # Parse parents
         for sha in matcher.group('parents').split(' '):
@@ -192,6 +191,19 @@ class Commit(object):
         self.load()
 
         return self.author_date() < other.author_date()
+
+    def __eq__(self, other):
+        """
+        Two Commits are equal when their hashes match.
+
+        :type other: object
+        :param other: The object to compare with
+        :rtype: bool
+        :return: True when they are equal, False otherwise
+        """
+        if type(other) is Commit:
+            return self.sha == other.sha
+        return False
 
     def for_each_parent(self, func):
         """
