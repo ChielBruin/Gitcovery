@@ -15,6 +15,9 @@ class Git(object):
     In addition to this, the Git class also contains a cache of all the commmits
     and authors, the tags in the repository and a reference to HEAD and the initial commit.
     """
+    _decode_error_policy = 'strict'
+    _char_encoding = 'utf-8'
+
     _commits = {}
     _authors = {}
     _tags = None
@@ -103,7 +106,27 @@ class Git(object):
         return folder
 
     @classmethod
-    def call(cls, cmds, root=None, kill_on_error=True, char_encoding='utf-8'):
+    def set_decode_settings(cls, char_encoding=None, decode_error_policy=None):
+        """
+        Set the settings of the decoder for raw git output.
+        See https://docs.python.org/2/library/codecs.html#codec-base-classes for valid error policies.
+
+        :type char_encoding: str
+        :param char_encoding: Optional, the encoding to use to decode the output
+        :type decode_error_policy: str
+        :param decode_error_policy: The policy to use when an error is encountered.
+        :rtype: (str, str)
+        :return: A tuple containing the new encoding and error policy
+        """
+        if char_encoding:
+            cls._char_encoding = char_encoding
+        if decode_error_policy:
+            cls._decode_error_policy = decode_error_policy
+
+        return cls._char_encoding, cls._decode_error_policy
+
+    @classmethod
+    def call(cls, cmds, root=None, kill_on_error=True):
         """
         Call the git subsystem via the command line and return the output.
         Kills the process when the call fails (unless specified otherwise).
@@ -126,7 +149,7 @@ class Git(object):
             if not root:
                 cls._verify_root()
                 root = cls.root
-            return subprocess.check_output(['git'] + cmds, stderr=subprocess.STDOUT, cwd=root).decode(char_encoding)
+            return subprocess.check_output(['git'] + cmds, stderr=subprocess.STDOUT, cwd=root).decode(cls._char_encoding, errors=cls._decode_error_policy)
         except subprocess.CalledProcessError as e:
             if kill_on_error:
                 print(e.cmd, e.output.decode())
