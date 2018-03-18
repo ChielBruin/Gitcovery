@@ -1,14 +1,13 @@
 language: python
 python:
+  # Run on both Pyuthon 2.7 and 3.5
   - "2.7"
   - "3.5"
 
 # Install the module and the dependencies
 install:
-  - pip2 install .
-  - pip3 install .
+  - pip install .
 
-# Run the tests with both Python 2 and 3
+# Run the tests
 script: 
-  - python2 setup.py test
-  - python3 setup.py test
+  - python setup.py test
