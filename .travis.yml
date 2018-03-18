@@ -1,10 +1,14 @@
 language: python
 python:
+  - "2.7"
   - "3.5"
 
-# command to install dependencies
+# Install the module and the dependencies
 install:
-  - pip install .
+  - pip2 install .
+  - pip3 install .
 
-# command to run tests
-script: python setup.py test
+# Run the tests with both Python 2 and 3
+script: 
+  - python2 setup.py test
+  - python3 setup.py test
