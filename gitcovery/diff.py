@@ -71,7 +71,7 @@ class _DiffContainer(_Diffable):
         return total
 
 
-class BlobDiff(object):
+class BlobDiff(_Diffable):
     """
     Class representing a code blob in the diff of a file.
     """
