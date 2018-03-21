@@ -87,20 +87,26 @@ class BlobDiff(_Diffable):
         # TODO: Store the actual diff data somehow
         self.added = []
         self.removed = []
+        self.changes = 0
 
-        for line in lines.split('\n'):
+        added_count = 0
+        removed_count = 0
+        for line in lines.strip().split('\n'):
             if line.startswith('+'):
+                added_count += 1
                 self.added.append(line)
-            if line.startswith('-'):
+            elif line.startswith('-'):
+                removed_count += 1
                 self.removed.append(line)
+            else:
+                self.changes += max(added_count, removed_count)
+                added_count = 0
+                removed_count = 0
+
+        self.changes += max(added_count, removed_count)
 
     def __len__(self):
-        # TODO: This counts duplicates
-        # some.code(here)
-        # + a.foo()
-        # - a.bar()
-        # Should give 1 line change, but gives 2 with this implementation.
-        return len(self.added) + len(self.removed)
+        return self.changes
 
     def num_added(self):
         return len(self.added)
