@@ -13,5 +13,9 @@ setup(name='gitcovery',
       ],
       zip_safe=False,
       test_suite='nose.collector',
-      tests_require=['nose'],
+      tests_require=[
+            'nose',
+            'parameterized',
+            'python-dateutil'
+      ],
       )

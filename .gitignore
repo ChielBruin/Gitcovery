@@ -1,5 +1,7 @@
 __pycache__/
 *.egg-info/
 .idea/
+.eggs/
+test-clone/
 
 *.pyc

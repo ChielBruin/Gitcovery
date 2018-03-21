@@ -1,0 +1,23 @@
+{
+    "9b423f8c38516ed33acfa907ae56ad3868741803": {
+        "author": "Chiel Bruin",
+        "authorDate": "2018-03-12 21:43:56 +0100",
+        "commit": "Chiel Bruin",
+        "commitDate": "2018-03-12 21:43:56 +0100",
+        "title": "Made diff PEP compliant and added docs",
+        "msg": "",
+        "parents": ["46922c66ec39f10b07a0cea3b864d307c6c5726c"],
+        "numFiles": 3
+    },
+
+    "4868bd573768c7d6141a21d94b7e99f49f2b053a": {
+        "author": "Chiel Bruin",
+        "authorDate": "2018-03-09 20:18:06 +0100",
+        "commit": "Chiel Bruin",
+        "commitDate": "2018-03-09 20:18:06 +0100",
+        "title": "Merge branch 'master' of https://github.com/ChielBruin/Gitcovery",
+        "msg": "",
+        "parents": ["f3ccd0b70fe758b539c28319735d9a6489c0fb10", "f98e5e0320c4122c58e8139cbf5f9f7e51e5b5ce"],
+        "numFiles": 0
+    }
+}

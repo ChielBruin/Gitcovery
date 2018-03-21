@@ -12,7 +12,7 @@ class Commit(object):
     the date of the commit, the commit message and the diff.
     """
 
-    _REGEX_COMMIT = re.compile('(?P<parents>([a-f0-9]+\s)*)\n' +
+    _REGEX_COMMIT = re.compile('(?P<parents>([a-f0-9]+\s?)*)\n' +
                                '(?P<author>.+)\n(?P<authorMail>.+)\n(?P<authorDate>[0-9\-:\s\+]+)\n' +
                                '(?P<commit>.+)\n(?P<commitMail>.+)\n(?P<commitDate>[0-9\-:\s\+]+)\n' +
                                '(?P<title>.*)(?P<message>(.*\n)*?(?=(diff --git)|\Z))?(?P<diff>diff (.*\n)*)?')
@@ -78,7 +78,7 @@ class Commit(object):
 
         # Parse the commit contents
         self._title = matcher.group('title')
-        self._msg = matcher.group('message') if matcher.group('message') else ''
+        self._msg = matcher.group('message').strip() if matcher.group('message') else ''
         self._diff = Diff(matcher.group('diff'))
 
     def unload(self):
@@ -135,7 +135,7 @@ class Commit(object):
         self.load()
         return self._title
 
-    def msg(self):
+    def message(self):
         """
         :rtype: str
         :return: The commit message
@@ -202,6 +202,9 @@ class Commit(object):
         :rtype: bool
         :return: True when this commit is older than the given commit, False otherwise
         """
+        if not type(other) is Commit:
+            raise TypeError
+
         self.load()
 
         return self.author_date() < other.author_date()

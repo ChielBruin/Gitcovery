@@ -55,6 +55,8 @@ class Git(object):
         :return: A reference to the root
         """
         name = re.search('/(?P<name>[^/]+)\.git$', addr).group('name')
+        if not os.path.exists(loc):
+            os.mkdir(loc)
         if not os.path.isdir(loc + os.sep + name):
             cls.call(['clone', addr], root=loc)
         return cls.set_root(loc + os.sep + name)
