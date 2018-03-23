@@ -119,7 +119,7 @@ class _AbsGitFile(object):
         :rtype: str
         :return: The status of this file
         """
-        out = Git.call(['status', self.path, '--short'])
+        out = Git.call(['status', self.path, '--short'], kill_on_error=False)
         return self._REGEX_LINESPLIT.split(out[1:] if out.startswith(' ') else out)[:-1]
 
     def history(self):

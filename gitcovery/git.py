@@ -102,7 +102,7 @@ class Git(object):
         # Check if the root is a git repository
         try:
             folder.status()
-        except Exception:
+        except IOError:
             raise Exception('%s is not a Git repository' % root)
 
         return folder
