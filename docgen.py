@@ -2,18 +2,23 @@ import re, os
 
 
 class FunctionDef(object):
-    REGEX = re.compile('def (?P<name>\w+)\s?\((?P<arguments>[\w\s,]+)\):'
-                       '\n\s{8}"""(?P<docs>(\s{8}.*\n)+?\n)?(?P<arg_desc>(\s{8}.*\n)+?)\s{8}"""')
+    REGEX = re.compile('def (?P<name>\w+)\s?\((?P<arguments>\w*(,\s\w+)*(?=,|\)))(,\s)?'
+                       '(?P<optional_arguments>\w+=\w+(,\s\w)*)?\):\n\s{8}"""(?P<docs>(\s{8}.*\n)+?\n)?'
+                       '(?P<arg_desc>(\s{8}.*\n)+?)\s{8}"""')
 
     def __init__(self, matcher):
         self.name = matcher.group('name')
         self.arguments = matcher.group('arguments')
+        self.optional_arguments = matcher.group('optional_arguments')
         self.docs = matcher.group('docs')
         self.arg_desc = self.parse_argument_descriptors(matcher.group('arg_desc'))
 
     def __str__(self):
         header = '#####'
-        signature = '`%s(%s)`' % (self.name, self.arguments)
+        if self.optional_arguments:
+            signature = '`%s(%s, %s)`' % (self.name, self.arguments, self.optional_arguments)
+        else:
+            signature = '`%s(%s)`' % (self.name, self.arguments)
         docs = '\n'.join(map(lambda x: x.strip(), self.docs.split('\n'))) if self.docs else ''
         arg_desc = '\n'.join(map(lambda x: '- %s' % x, self.arg_desc))
         return ('%s %s\n%s%s' % (header, signature, docs, arg_desc)).replace('[', '\[').replace(']', '\]')

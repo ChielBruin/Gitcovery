@@ -25,6 +25,11 @@ With the root of the repository selected there are three main approaches to trav
   You can also start by a list of all the commits made in the repository.
   Getting this list could be done by querying the history of the root folder: `root.history()`
   Note that there is currently no direct way to do this besides this call.
+  
+You must also note that you never have to use an constructor explicitly: 
+- Files can be accessed via the root of the repository
+- Commits can be 'created' via `Commit.get_commit(<commit_hash>)`
+- Authors are accessible by name via `Author.get_author(<name>)`
 ## Class overview
 
 ### Author
@@ -119,6 +124,16 @@ Compare this commit with another based on the date of the commit.
 ##### `author_date(self)`
 - :rtype: datetime.datetime
 - :return: The author date
+
+##### `changes(self, file_name=None)`
+
+Get the diff for this commit.
+When file_name is given, only the diff for that file is returned.
+
+- :type file_name: str
+- :param file_name: Optional file name to get the diff from
+- :rtype: _DiffContainer
+- :return: The diff of this commit
 
 ##### `commit(self)`
 - :rtype: Author
@@ -216,6 +231,23 @@ advised to use the returned root to reconstruct all references.
 
 - :type name: str
 - :param name: The name of the branch to checkout
+- :rtype: GitFolder
+- :return: A reference to the root
+
+##### `clone(cls, loc, address, update=False)`
+
+Clone a git repository to the specified location and return a reference to the root.
+When there is already a folder with the correct name at that location, cloning is skipped.
+Calling this function is identical to calling
+`cd loc && git clone addr` and setting the root to this location.
+Optionally, you could update the repository (when it already exists) by setting `update` to True.
+
+- :type update: bool
+- :param update: whether to update the repository when already cloned
+- :type loc: str
+- :param loc: The location to clone to
+- :type address: str
+- :param address: The location of the repository to clone
 - :rtype: GitFolder
 - :return: A reference to the root
 
@@ -360,6 +392,42 @@ Get the contents of this file at the given commit.
 ##### `changes(self)`
 - :rtype: List\[FileDiff\]
 - :return: For each of the commits in the history, the relevant part of the diff
+
+##### `changes_from(self, from_commit, to_commit=None)`
+
+Get the diff of this file between two commits.
+By default this is between the HEAD and the specified commit.
+
+- :type from_commit: Commit | str
+- :param from_commit: The from commit of the diff
+- :type to_commit: Commit | str
+- :param to_commit: The to commit of the diff. Defaults to HEAD
+- :rtype: FileDiff
+- :return: The diff between the from and to commit
+
+##### `count(self, pattern, at=None)`
+
+Count the number of occurrences of the pattern in the file contents.
+This function does not count using a regex, but simple string comparisons.
+
+- :type pattern: str
+- :param pattern: The pattern to count
+- :type at: Commit | str
+- :param at: Optional param to look at a specific version of the file
+- :rtype: int
+- :return: The number of times the pattern occurred
+
+##### `regex_count(self, pattern, at=None)`
+
+Count the number of occurrences of the pattern in the file contents.
+This function uses a regex, and accepts both compiled and non-compiled regexes.
+
+- :type pattern: re.RegexObject | str
+- :param pattern: The pattern to count
+- :type at: Commit | str
+- :param at: Optional param to look at a specific version of the file
+- :rtype: int
+- :return: The number of times the pattern occurred
 
 ### GitFolder
 
