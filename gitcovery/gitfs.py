@@ -134,7 +134,7 @@ class _AbsGitFile(object):
 
         res = [None] * len(lines)
         for i, sha in enumerate(lines):
-            res[i] = Git.get_commit(sha)
+            res[i] = Commit.get_commit(sha)
         return res
 
 
@@ -178,11 +178,11 @@ class GitFile(_AbsGitFile):
         :return: The diff between the from and to commit
         """
         if type(from_commit) is str:
-            from_commit = Git.get_commit(from_commit)
+            from_commit = Commit.get_commit(from_commit)
         if to_commit is None:
             to_commit = Git.get_head()
         elif type(to_commit) is str:
-            to_commit = Git.get_commit(to_commit)
+            to_commit = Commit.get_commit(to_commit)
 
         assert from_commit < to_commit, 'The from commit should be older than the to commit'
 

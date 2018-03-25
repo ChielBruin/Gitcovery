@@ -17,6 +17,7 @@ class Commit(object):
                                '(?P<author>.+)\n(?P<authorMail>.+)\n(?P<authorDate>[0-9\-:\s\+]+)\n' +
                                '(?P<commit>.+)\n(?P<commitMail>.+)\n(?P<commitDate>[0-9\-:\s\+]+)\n' +
                                '(?P<title>.*)(?P<message>(.*\n)*?(?=(diff --git)|\Z))?(?P<diff>diff (.*\n)*)?')
+    _commits = {}
 
     def __init__(self, sha, preload=False):
         """
@@ -63,7 +64,7 @@ class Commit(object):
         for sha in matcher.group('parents').split(' '):
             if sha == '':
                 continue
-            self._parents.append(Git.get_commit(sha))
+            self._parents.append(self.get_commit(sha))
 
         # Parse authors
         print(self.sha)
@@ -206,3 +207,24 @@ class Commit(object):
 
         for child in self.parents():
             child.forEachChild(func)
+
+    @classmethod
+    def get_commit(cls, sha):
+        """
+        Get a commit with the given hash from the cache.
+        When it is not present in the cache, a new commit is created.
+
+        :type sha: str
+        :param sha: The SHA hash of the commit to get
+        :rtype: Commit
+        :return: The requested Commit object
+        :raise: Exception, when the given hash is empty
+        """
+        if not sha:
+            raise Exception('Invalid sha \'%s\'' % sha)
+        if sha in cls._commits:
+            return cls._commits[sha]
+        else:
+            commit = Commit(sha)
+            cls._commits[sha] = commit
+            return commit

@@ -11,7 +11,7 @@ This module wraps the git repository in the following ways, making it simple to 
 git = Git.set_root('path/to/repo')                                      # Select local dir
 git = Git.clone('/tmp', 'https://github.com/ChielBruin/Gitcovery.git')  # Clone and select remote dir
 git = Git.checkout('<branch>')
-commit = Git.get_commit('<commitHash>')
+commit = Commit.get_commit('<commitHash>')
 
 # Get the files in the tests folder
 folder = git.get_folder('src/tests').children()

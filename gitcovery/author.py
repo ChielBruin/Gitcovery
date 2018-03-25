@@ -1,5 +1,6 @@
 import re
 
+import gitcovery
 from gitcovery import Git
 
 
@@ -72,7 +73,7 @@ class Author(object):
                 cls._authors[name] = Author(name, email)
             else:
                 cls._authors[name].register_email(email)
-            cls._authors[name].register_commit(Git.get_commit(match.group('sha')))
+            cls._authors[name].register_commit(gitcovery.Commit.get_commit(match.group('sha')))
 
         for match in cls._AUTHOR_REGEX.finditer(out):
             register(match.group('name'), match.group('email'))

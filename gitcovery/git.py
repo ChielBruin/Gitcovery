@@ -18,7 +18,6 @@ class Git(object):
     _decode_error_policy = 'strict'
     _char_encoding = 'utf-8'
 
-    _commits = {}
     _tags = None
     _initialCommits = []
     _head = None
@@ -159,27 +158,6 @@ class Git(object):
                 raise IOError(e)
 
     @classmethod
-    def get_commit(cls, sha):
-        """
-        Get a commit with the given hash from the cache.
-        When it is not present in the cache, a new commit is created.
-
-        :type sha: str
-        :param sha: The SHA hash of the commit to get
-        :rtype: Commit
-        :return: The requested Commit object
-        :raise: Exception, when the given hash is empty
-        """
-        if not sha:
-            raise Exception('Invalid sha \'%s\'' % sha)
-        if sha in cls._commits:
-            return cls._commits[sha]
-        else:
-            commit = gitcovery.Commit(sha)
-            cls._commits[sha] = commit
-            return commit
-
-    @classmethod
     def get_tags(cls):
         """
         Get a list of all the tags of this project.
@@ -193,7 +171,7 @@ class Git(object):
             out = cls.call(['show-ref', '--tags'], kill_on_error=False)  # A repo without tags gives an error
             matcher = cls._REGEX_TAGS.finditer(out)
             for match in matcher:
-                cls._tags[match.group('tag')] = cls.get_commit(match.group('commit'))
+                cls._tags[match.group('tag')] = gitcovery.Commit.get_commit(match.group('commit'))
         return list(cls._tags.keys())
 
     @classmethod
@@ -234,7 +212,7 @@ class Git(object):
         """
         if not cls._initialCommits:
             out = cls.call(['rev-list', '--max-parents=0', 'HEAD'])
-            cls._initialCommits = map(lambda x: cls.get_commit(x), out.split('\n')[0:-1])
+            cls._initialCommits = map(lambda x: gitcovery.Commit.get_commit(x), out.split('\n')[0:-1])
         return cls._initialCommits
 
     @classmethod
@@ -247,5 +225,5 @@ class Git(object):
         """
         if not cls._head:
             out = cls.call(['rev-parse', 'HEAD'])
-            cls._head = Git.get_commit(out.strip())
+            cls._head = gitcovery.Commit.get_commit(out.strip())
         return cls._head
