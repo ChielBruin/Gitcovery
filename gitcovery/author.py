@@ -13,7 +13,7 @@ class Author(object):
     """
     _authors = {}
     _AUTHOR_REGEX = re.compile('(?P<name>.+)\n(?P<email>.+)\n(?P<commit>.+)\n' +
-                               '(?P<commit_email>.+)\n(?P<sha>[a-z0-9]+)\n\n')
+                               '(?P<commit_email>.+)\n(?P<sha>[a-f0-9]+)\n\n')
 
     def __init__(self, name, email):
         """
@@ -26,7 +26,7 @@ class Author(object):
         """
         self.name = name
         self.emails = [email]
-        self.commits = {}
+        self.commits = []
 
     def register_commit(self, commit):
         """
@@ -37,8 +37,8 @@ class Author(object):
         :rtype: bool
         :return: True when registration was successful, False otherwise
         """
-        if commit.sha not in self.commits:
-            self.commits[commit.sha] = commit.sha
+        if commit not in self.commits:
+            self.commits.append(commit)
             return True
         else:
             return False
@@ -88,13 +88,13 @@ class Author(object):
         :return: A list of all authors
         """
         cls._load_authors()
-        return cls._authors.items()
+        return cls._authors.values()
 
     @classmethod
     def get_author(cls, name, email=''):
         """
         Get the Author object of the author with the given name.
-        The email address is not necessary when searching and is only used for verification.
+        The email address is not necessary when searching and is appended to a known author.
 
         :type name: str
         :param name: The name of the author
@@ -102,7 +102,7 @@ class Author(object):
         :param email: (str) The email of the author (this value is optional)
         :rtype: Author
         :return: The requested Author object
-        :raise Exception: When the author does not exist, or if the email does not match
+        :raise Exception: When the author does not exist
         """
         name = name.strip()
         cls._load_authors()
@@ -113,10 +113,9 @@ class Author(object):
 
         if email:
             author = cls._authors[name]
-            if email in author.emails:
-                return author
-            else:
-                raise Exception('%s is not a known email used by %s, valid ones are <%s>' %
-                                (email, name, ', '.join(author.emails)))
+            if email not in author.emails:
+                author.register_email(email)
+            return author
+
         else:
             return cls._authors[name]

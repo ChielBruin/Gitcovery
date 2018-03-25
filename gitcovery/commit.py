@@ -52,7 +52,7 @@ class Commit(object):
         if self._author:
             return
 
-        out = Git.call(['show', '--pretty=format:%P%n%an%n%ae%n%ai%n%cn%n%ce%n%ci%n%s%n%b', self.sha])
+        out = Git.call(['show', '--pretty=format:%P%n%aN%n%aE%n%ai%n%cN%n%cE%n%ci%n%s%n%b', self.sha])
         matcher = self._REGEX_COMMIT.search(out)
 
         if not matcher:
@@ -67,7 +67,6 @@ class Commit(object):
             self._parents.append(self.get_commit(sha))
 
         # Parse authors
-        print(self.sha)
         self._author = Author.get_author(matcher.group('author'), email=matcher.group('authorMail'))
         self._commit = Author.get_author(matcher.group('commit'), email=matcher.group('commitMail'))
 
@@ -93,7 +92,6 @@ class Commit(object):
         self._msg = ''
         self._diff = None
         self._parents = []
-        self._children = []
 
     def author(self):
         """
