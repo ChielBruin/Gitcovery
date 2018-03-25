@@ -37,7 +37,6 @@ class Commit(object):
         self._msg = ''
         self._diff = None
         self._parents = []
-        self._children = []
 
         if preload:
             self.load()
@@ -63,9 +62,7 @@ class Commit(object):
         for sha in matcher.group('parents').split(' '):
             if sha == '':
                 continue
-            commit = Git.get_commit(sha)
-            self._parents.append(commit)
-            commit.register_child(self)
+            self._parents.append(Git.get_commit(sha))
 
         # Parse authors
         self._author = Git.get_author(matcher.group('author'), email=matcher.group('authorMail'))
@@ -159,21 +156,6 @@ class Commit(object):
         else:
             return self._diff
 
-    def register_child(self, commit):
-        """
-        Register a child to this commit.
-
-        :type commit: Commit
-        :param commit: The commit to add as a child
-        :rtype: bool
-        :return: True when successful, False otherwise
-        """
-        if commit not in self._children:
-            self._children.append(commit)
-            return True
-        else:
-            return False
-
     def parents(self):
         """
         :rtype: List[Commit]
@@ -181,17 +163,6 @@ class Commit(object):
         """
         self.load()
         return self._parents
-
-    def children(self):
-        """
-        Get all the commits that registered themselves as children.
-        Note: this list might not be complete, so please make sure all possible children are loaded.
-
-        :rtype: List[Commit]
-        :return: A list of all the currently known children of this commit
-        """
-        self.load()
-        return self._children
 
     def __lt__(self, other):
         """

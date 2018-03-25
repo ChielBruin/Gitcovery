@@ -62,12 +62,7 @@ class CommitTest(unittest.TestCase):
         self.assertEqual(data['title'], self.instance.title(), msg)
         self.assertEqual(data['msg'], self.instance.message(), msg)
 
-        parents = self.instance.parents()
-        self.assertEqual(data['parents'], list(map(lambda x: x.sha, parents)), msg)
-
-        # Check if correctly registered
-        for parent in parents:
-            self.assertTrue(self.instance in Git.get_commit(parent.sha).children(), msg)
+        self.assertEqual(data['parents'], list(map(lambda x: x.sha, self.instance.parents())), msg)
 
         self.assertEqual(data['numFiles'], len(self.instance.changes().data))
 
@@ -80,19 +75,6 @@ class CommitTest(unittest.TestCase):
         self.assertIsNotNone(self.instance._author)
         self.instance.unload()
         self.assertIsNone(self.instance._author)
-
-    def test_register_child(self):
-        """
-        Register a child and verify that it is registered.
-        Also checks the return values of the call when adding duplicates.
-        """
-        other = self.instance
-        self.assertNotIn(other, self.instance.children())
-
-        self.assertTrue(self.instance.register_child(other))
-        self.assertIn(other, self.instance.children())
-
-        self.assertFalse(self.instance.register_child(other))
 
     def test_lt_invalid(self):
         """
