@@ -1,6 +1,7 @@
 import re
 from dateutil import parser as dp
 
+from gitcovery import Author
 from .git import Git
 from .diff import Diff
 
@@ -65,8 +66,9 @@ class Commit(object):
             self._parents.append(Git.get_commit(sha))
 
         # Parse authors
-        self._author = Git.get_author(matcher.group('author'), email=matcher.group('authorMail'))
-        self._commit = Git.get_author(matcher.group('commit'), email=matcher.group('commitMail'))
+        print(self.sha)
+        self._author = Author.get_author(matcher.group('author'), email=matcher.group('authorMail'))
+        self._commit = Author.get_author(matcher.group('commit'), email=matcher.group('commitMail'))
 
         self._author.register_commit(self)
 

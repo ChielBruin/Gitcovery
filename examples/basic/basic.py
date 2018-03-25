@@ -1,5 +1,5 @@
 from __future__ import print_function
-from gitcovery import Git
+from gitcovery import Git, Author
 
 '''
 A basic example for usage of the module.
@@ -12,7 +12,7 @@ In this example most of the core functionalities of the module are shown, includ
  - Getting file properties of all files
 '''
 
-#root = Git.set_root('.')
+# root = Git.set_root('.')
 root = Git.clone('/tmp', 'https://github.com/ChielBruin/Gitcovery.git')
 history = root.history()
 
@@ -32,10 +32,9 @@ print('The full history contains %d commits, this contains %d changes in the REA
 for commit in history:
     diff = commit.changes()
     print('%s: +%d, -%d\t(%d)\t%s' % (commit.sha, diff.num_added(), diff.num_removed(), len(diff), commit.title()))
-    commit.load()	# Make sure to load all commits before getting author data
 
 # Print the number of commits made by 'Chiel Bruin'
-print(len(Git.get_author('Chiel Bruin').commits))
+print(len(Author.get_author('Chiel Bruin').commits))
 
 # Print the status and relative path of each file
 root.for_each_file(lambda x: print(x.status(), x.relative_path))

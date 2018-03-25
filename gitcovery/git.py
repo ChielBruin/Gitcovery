@@ -12,14 +12,13 @@ class Git(object):
     It exposes a number of static methods that allow you to select or clone
     the repository, do a checkout on a specific branch or make direct calls to Git.
 
-    In addition to this, the Git class also contains a cache of all the commmits
-    and authors, the tags in the repository and a reference to HEAD and the initial commit.
+    In addition to this, the Git class also contains a cache of all the commits
+    and the tags in the repository and a reference to HEAD and the initial commit.
     """
     _decode_error_policy = 'strict'
     _char_encoding = 'utf-8'
 
     _commits = {}
-    _authors = {}
     _tags = None
     _initialCommits = []
     _head = None
@@ -179,43 +178,6 @@ class Git(object):
             commit = gitcovery.Commit(sha)
             cls._commits[sha] = commit
             return commit
-
-    @classmethod
-    def authors(cls):
-        """
-        Get a list of all authors from the cache.
-        Because the authors are only cached when they are encountered,
-        you need to make sure that every commit that could introduce a new author is loaded.
-
-        :rtype: List[Author]
-        :return: A list of all cached authors
-        """
-        return cls._authors.values()
-
-    @classmethod
-    def get_author(cls, name, email=''):
-        """
-        Get an Author object from the cache with a given name.
-        When an author is not present, it is created and added to the cache (as long as an email is provided)
-        The email address is not neccesary when searching, the name suffices.
-
-        :type name: str
-        :param name: The name of the author
-        :type email: str
-        :param email: (str) The email of the author (this value is optional)
-        :rtype: Author
-        :return: The requested Author object
-        """
-        name = name.strip()
-        if name not in cls._authors:
-            if email:
-                cls._authors[name] = gitcovery.Author(name, email)
-            else:
-                raise Exception(
-                    'Author <%s> not known, did you load all commits (as you are reading from cached values)?' % name)
-
-        # TODO: Check the email and add it if email is unknown for that author
-        return cls._authors[name]
 
     @classmethod
     def get_tags(cls):
