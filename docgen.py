@@ -8,7 +8,11 @@ class FunctionDef(object):
 
     def __init__(self, matcher):
         self.name = matcher.group('name')
-        self.arguments = matcher.group('arguments')
+
+        arguments = matcher.group('arguments')
+        arguments = arguments.replace('self', '').replace('cls', '')
+        self.arguments = arguments[2:] if arguments.startswith(', ') else arguments
+
         self.optional_arguments = matcher.group('optional_arguments')
         self.docs = matcher.group('docs')
         self.arg_desc = self.parse_argument_descriptors(matcher.group('arg_desc'))
