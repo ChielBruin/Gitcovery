@@ -38,26 +38,33 @@ class Git(object):
             raise Exception('Please set the git root first')
 
     @classmethod
-    def clone(cls, loc, addr):
+    def clone(cls, loc, address, update=False):
         """
         Clone a git repository to the specified location and return a reference to the root.
         When there is already a folder with the correct name at that location, cloning is skipped.
         Calling this function is identical to calling
         `cd loc && git clone addr` and setting the root to this location.
+        Optionally, you could update the repository (when it already exists) by setting `update` to True.
 
+        :type update: bool
+        :param update: whether to update the repository when already cloned
         :type loc: str
         :param loc: The location to clone to
-        :type addr: str
-        :param addr: The location of the repository to clone
+        :type address: str
+        :param address: The location of the repository to clone
         :rtype: GitFolder
         :return: A reference to the root
         """
-        name = re.search('/(?P<name>[^/]+)\.git$', addr).group('name')
+        name = re.search('/(?P<name>[^/]+)\.git$', address).group('name')
+        loc = loc[0:-1] if loc.endswith('/') else loc
         if not os.path.exists(loc):
             os.mkdir(loc)
-        if not os.path.isdir(loc + os.sep + name):
-            cls.call(['clone', addr], root=loc)
-        return cls.set_root(loc + os.sep + name)
+        path = loc + os.sep + name
+        if not os.path.isdir(path):
+            cls.call(['clone', address], root=loc)
+        elif update:
+            cls.call(['pull'], root=path)
+        return cls.set_root(path)
 
     @classmethod
     def checkout(cls, name):
