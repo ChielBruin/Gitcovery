@@ -30,6 +30,9 @@ With the root of the repository selected there are three main approaches to trav
   You can also start by a list of all the commits made in the repository.
   Getting this list could be done by querying the history of the root folder: `root.history()`
   Note that there is currently no direct way to do this besides this call.
+  When working with many commits, the speed of the interface with git can become a bottleneck,
+  in this case you might want to consider pre-loading all the data.
+  This can be done using `Commit.load_all()`.
   
 You must also note that you never have to use an constructor explicitly: 
 - Files can be accessed via the root of the repository

@@ -72,6 +72,7 @@ class ClassDef(object):
 
 class Module(object):
     _dir = ''
+    _version = ''
     classes = {}
 
     @classmethod
@@ -106,11 +107,25 @@ class Module(object):
     def set_dir(cls, location):
         cls._dir = location
 
+    @classmethod
+    def version(cls):
+        if not cls._version:
+            with open(cls._dir + os.sep + '..' + os.sep + 'setup.py') as fh:
+                cls._version = re.search('version=\'(?P<version>(\d+.?)+)\'', fh.read()).group('version')
+        return cls._version
+
 
 if __name__ == '__main__':
     Module.set_dir('gitcovery')
     with open('REFERENCE.md', 'w') as reference_file:
-        reference_file.write('# Gitcovery reference documentation\n\n')
+        reference_file.write('# Gitcovery reference documentation\n')
+        reference_file.write('**\[Generated for gitcovery version %s\]**\n\n' % Module.version())
+        reference_file.write('> ### This reference file is currently in BETA\n')
+        reference_file.write('> Therefore, there are a few known issues and future improvements:\n')
+        reference_file.write('> - Public fields are not shown\n')
+        reference_file.write('> - Inherited functions do not show correctly (or at all)\n')
+        reference_file.write('> - Inherited docs are not shown\n')
+        reference_file.write('> - Argument descriptors are not formatted\n\n')
         reference_file.write(Module.description())
         reference_file.write('## Class overview\n\n')
 

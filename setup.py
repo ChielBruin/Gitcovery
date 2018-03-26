@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='gitcovery',
-      version='0.2',
+      version='0.3',
       description='A wrapper for the git filesystem',
       url='http://github.com/ChielBruin/gitcovery',
       author='Chiel Bruin',

@@ -1,4 +1,12 @@
 # Gitcovery reference documentation
+**\[Generated for gitcovery version 0.3\]**
+
+> ### This reference file is currently in BETA
+> Therefore, there are a few known issues and future improvements:
+> - Public fields are not shown
+> - Inherited functions do not show correctly (or at all)
+> - Inherited docs are not shown
+> - Argument descriptors are not formatted
 
 
 **TODO** Introduction here
@@ -25,6 +33,9 @@ With the root of the repository selected there are three main approaches to trav
   You can also start by a list of all the commits made in the repository.
   Getting this list could be done by querying the history of the root folder: `root.history()`
   Note that there is currently no direct way to do this besides this call.
+  When working with many commits, the speed of the interface with git can become a bottleneck,
+  in this case you might want to consider pre-loading all the data.
+  This can be done using `Commit.load_all()`.
   
 You must also note that you never have to use an constructor explicitly: 
 - Files can be accessed via the root of the repository
@@ -162,8 +173,24 @@ When it is not present in the cache, a new commit is created.
 - :raise: Exception, when the given hash is empty
 
 ##### `load()`
-- Load the data for this commit.
-- This function calls 'git show' and parses the output.
+
+Load the data for this commit.
+This function calls 'git show' and parses the output.
+
+- :rtype: bool
+- :return: True when successfully loaded, False when already loaded
+
+##### `load_all(, load_diff=False)`
+
+Preload all the metadata of all commits.
+This method should be used when loading a large number of commits,
+as a significant speedup is achieved in this case.
+By default the meatadata does not include the diffs.
+This is done to reduce the execution time and most notably the memory usage.
+You can specify to load the diffs, but this is not recommended unless you need the diffs for all commits.
+
+- :type load_diff: bool
+- :return load_load_diff: Whether to load the diff data
 
 ##### `message()`
 - :rtype: str
