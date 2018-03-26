@@ -52,7 +52,8 @@ class _AbsGitFile(object):
         :return: The path relative to the repository root
         """
         if self._path:
-            return (self._path + os.sep + self.name).replace(Git.root if Git.root.endswith('/') else Git.root + '/', '')
+            root = Git.root.path
+            return (self._path + os.sep + self.name).replace(root if root.endswith('/') else root + '/', '')
         else:
             return self.name
 

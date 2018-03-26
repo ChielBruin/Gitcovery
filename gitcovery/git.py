@@ -21,7 +21,7 @@ class Git(object):
     _tags = None
     _initialCommits = []
     _head = None
-    root = ''
+    root = None
 
     # Regex for matching tags and their commit hashes
     _REGEX_TAGS = re.compile('(?P<commit>[0-9a-z]+) refs/tags/(?P<tag>.*)')
@@ -82,7 +82,7 @@ class Git(object):
         """
         cls._verify_root()
         cls.call(['checkout', name])
-        return gitcovery.GitFolder(cls.root)
+        return cls.set_root(cls.root.path)
 
     @classmethod
     def set_root(cls, root):
@@ -101,8 +101,8 @@ class Git(object):
             # Converting this to a . is easy, but it might not be what the user wants.
             # Therefore the error is thrown containing a possible solution.
             raise Exception('Using the current directory is only supported by setting the root to \'.\'')
-        cls.root = root
         folder = gitcovery.GitFolder(root)
+        cls.root = folder
 
         # Check if the root is a git repository
         try:
@@ -155,7 +155,7 @@ class Git(object):
         try:
             if not root:
                 cls._verify_root()
-                root = cls.root
+                root = cls.root.path
             return subprocess.check_output(['git'] + cmds, stderr=subprocess.STDOUT, cwd=root).decode(cls._char_encoding, errors=cls._decode_error_policy)
         except subprocess.CalledProcessError as e:
             if kill_on_error:

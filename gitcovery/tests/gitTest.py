@@ -23,7 +23,7 @@ class GitTest(TestCase):
         Git._tags = None
         Git._initialCommits = []
         Git._head = None
-        Git.root = ''
+        Git.root = None
 
     def test_verify_root(self):
         """
@@ -46,7 +46,7 @@ class GitTest(TestCase):
         Test the behaviour of set_root(), when the given root is not a git repository.
         """
         with self.assertRaisesRegexp(Exception, '.* is not a Git repository'):
-            Git.set_root('/')
+            Git.set_root('../')
 
     def test_set_root_empty(self):
         """

@@ -1,4 +1,5 @@
 import re
+import warnings
 from dateutil import parser as dp
 
 from gitcovery import Author
@@ -13,10 +14,11 @@ class Commit(object):
     the date of the commit, the commit message and the diff.
     """
 
-    _REGEX_COMMIT = re.compile('(?P<parents>([a-f0-9]+\s?)*)\n' +
+    _REGEX_COMMIT = re.compile('(?P<sha>([a-f0-9]+)\n)?(?P<parents>([a-f0-9]+\s?)*)\n' +
                                '(?P<author>.+)\n(?P<authorMail>.+)\n(?P<authorDate>[0-9\-:\s\+]+)\n' +
                                '(?P<commit>.+)\n(?P<commitMail>.+)\n(?P<commitDate>[0-9\-:\s\+]+)\n' +
-                               '(?P<title>.*)(?P<message>(.*\n)*?(?=(diff --git)|\Z))?(?P<diff>diff (.*\n)*)?')
+                               '(?P<title>.*)(?P<message>(.*\n)*?(?=(diff --git)|\Z|([0-9a-f]+\n)))?' +
+                               '(?P<diff>diff (.*\n)*?(?=([a-f0-9]+\n)|\Z))?')
     _commits = {}
 
     def __init__(self, sha, preload=False):
@@ -43,17 +45,15 @@ class Commit(object):
         if preload:
             self.load()
 
-    def load(self):
+    def _set_from_string(self, matcher, load_diff=True):
         """
-        Load the data for this commit.
-        This function calls 'git show' and parses the output.
-        """
-        # If already loaded, skip
-        if self._author:
-            return
+        Set the contents of this commit with the data from the given matcher.
 
-        out = Git.call(['show', '--pretty=format:%P%n%aN%n%aE%n%ai%n%cN%n%cE%n%ci%n%s%n%b', self.sha])
-        matcher = self._REGEX_COMMIT.search(out)
+        :type matcher: matcher
+        :param matcher: The used to load
+        :type load_diff: bool
+        :param load_diff: Whether to load the diff from the string
+        """
 
         if not matcher:
             raise Exception(
@@ -78,7 +78,36 @@ class Commit(object):
         # Parse the commit contents
         self._title = matcher.group('title')
         self._msg = matcher.group('message').strip() if matcher.group('message') else ''
-        self._diff = Diff(matcher.group('diff'))
+
+        # Parse the diff if provided
+        if load_diff:
+            self._diff = Diff(matcher.group('diff'))
+        else:
+            self._diff = None
+
+    def _load_diff(self):
+        """
+        Load only the diff data for this commit.
+        """
+        if self._diff:
+            return
+        self._diff = Diff(Git.call(['show', '--pretty=format:', self.sha]))
+
+    def load(self):
+        """
+        Load the data for this commit.
+        This function calls 'git show' and parses the output.
+
+        :rtype: bool
+        :return: True when successfully loaded, False when already loaded
+        """
+        # If already loaded, skip
+        if self._author:
+            return False
+
+        out = Git.call(['show', '--pretty=format:%P%n%aN%n%aE%n%ai%n%cN%n%cE%n%ci%n%s%n%b', self.sha])
+        self._set_from_string(self._REGEX_COMMIT.search(out))
+        return True
 
     def unload(self):
         """
@@ -151,7 +180,8 @@ class Commit(object):
         :rtype: _DiffContainer
         :return: The diff of this commit
         """
-        self.load()
+        if not self._diff and not self.load():
+            self._load_diff()
         if file_name:
             return self._diff.get_file(file_name)
         else:
@@ -226,3 +256,26 @@ class Commit(object):
             commit = Commit(sha)
             cls._commits[sha] = commit
             return commit
+
+    @classmethod
+    def load_all(cls, load_diff=False):
+        """
+        Preload all the metadata of all commits.
+        This method should be used when loading a large number of commits,
+        as a significant speedup is achieved in this case.
+        By default the meatadata does not include the diffs.
+        This is done to reduce the execution time and most notably the memory usage.
+        You can specify to load the diffs, but this is not recommended unless you need the diffs for all commits.
+
+        :type load_diff: bool
+        :return load_load_diff: Whether to load the diff data
+        """
+        if load_diff:
+            warnings.warn('Loading all the diff data can take very much memory for large repositories '
+                          '(Multiple GBs for > 20000 commits)')
+
+            out = Git.call(['log', '-p', '--pretty=format:%H%n%P%n%aN%n%aE%n%ai%n%cN%n%cE%n%ci%n%s%n%b'])
+        else:
+            out = Git.call(['log', '--pretty=format:%H%n%P%n%aN%n%aE%n%ai%n%cN%n%cE%n%ci%n%s%n%b'])
+        for matcher in cls._REGEX_COMMIT.finditer(out):
+            cls.get_commit(matcher.group('sha').strip())._set_from_string(matcher, load_diff=load_diff)
