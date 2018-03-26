@@ -15,8 +15,8 @@ class Commit(object):
     """
 
     _REGEX_COMMIT = re.compile('(?P<sha>([a-f0-9]+)\n)?(?P<parents>([a-f0-9]+\s?)*)\n' +
-                               '(?P<author>.+)\n(?P<authorMail>.+)\n(?P<authorDate>[0-9\-:\s\+]+)\n' +
-                               '(?P<commit>.+)\n(?P<commitMail>.+)\n(?P<commitDate>[0-9\-:\s\+]+)\n' +
+                               '(?P<author>.+)\n(?P<authorMail>.+)\n(?P<authorDate>[0-9\-:\s+]+)\n' +
+                               '(?P<commit>.+)\n(?P<commitMail>.+)\n(?P<commitDate>[0-9\-:\s+]+)\n' +
                                '(?P<title>.*)(?P<message>(.*\n)*?(?=(diff --git)|\Z|([0-9a-f]+\n)))?' +
                                '(?P<diff>diff (.*\n)*?(?=([a-f0-9]+\n)|\Z))?')
     _commits = {}
