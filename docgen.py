@@ -2,11 +2,12 @@ import re, os
 
 
 class FunctionDef(object):
-    REGEX = re.compile('def (?P<name>\w+)\s?\((?P<arguments>\w*(,\s\w+)*(?=,|\)))(,\s)?'
+    REGEX = re.compile('(@(?P<annotation>\w*)\s*\n\s{4})?'
+                       'def (?P<name>\w+)\s?\((?P<arguments>\w*(,\s\w+)*(?=,|\)))(,\s)?'
                        '(?P<optional_arguments>\w+=\w+(,\s\w)*)?\):\n\s{8}"""(?P<docs>(\s{8}.*\n)+?\n)?'
                        '(?P<arg_desc>(\s{8}.*\n)+?)\s{8}"""')
 
-    def __init__(self, matcher):
+    def __init__(self, matcher, parent):
         self.name = matcher.group('name')
 
         arguments = matcher.group('arguments')
@@ -14,18 +15,37 @@ class FunctionDef(object):
         self.arguments = arguments[2:] if arguments.startswith(', ') else arguments
 
         self.optional_arguments = matcher.group('optional_arguments')
-        self.docs = matcher.group('docs')
-        self.arg_desc = self.parse_argument_descriptors(matcher.group('arg_desc'))
+        self._docs = matcher.group('docs')
+        self._arg_desc = self.parse_argument_descriptors(matcher.group('arg_desc'))
+        self.annotation = matcher.group('annotation')
+        self.parent = parent
+
+    @property
+    def docs(self):
+        self_docs = '\n'.join(map(lambda x: x.strip(), self._docs.split('\n'))) if self._docs else ''
+        if self.parent and self.name in self.parent.functions:
+            return self.parent.functions[self.name].docs + '\n' + self_docs
+        else:
+            return self_docs
+
+    @property
+    def arg_desc(self):
+        if self._arg_desc:
+            return '\n'.join(map(lambda x: '- %s' % x, self._arg_desc))
+        elif self.parent:
+            return self.parent.arg_desc
+        else:
+            return ''
 
     def __str__(self):
-        header = '#####'
+        header = '##### '
+        annotation = ' - _static_ ' if (self.annotation == 'classmethod' or self.annotation == 'staticmethod') else ''
         if self.optional_arguments:
-            signature = '`%s(%s, %s)`' % (self.name, self.arguments, self.optional_arguments)
+            signature = '%s(%s, %s)' % (self.name, self.arguments, self.optional_arguments)
         else:
-            signature = '`%s(%s)`' % (self.name, self.arguments)
-        docs = '\n'.join(map(lambda x: x.strip(), self.docs.split('\n'))) if self.docs else ''
-        arg_desc = '\n'.join(map(lambda x: '- %s' % x, self.arg_desc))
-        return ('%s %s\n%s%s' % (header, signature, docs, arg_desc)).replace('[', '\[').replace(']', '\]')
+            signature = '%s(%s)' % (self.name, self.arguments)
+
+        return ('%s%s%s\n%s%s' % (header, signature, annotation, self.docs, self.arg_desc)).replace('[', '\[').replace(']', '\]')
 
     @staticmethod
     def parse_argument_descriptors(raw):
@@ -42,32 +62,40 @@ class ClassDef(object):
                        '\s*"""\n(?P<docs>(.*\n)+?)\s*"""\n*(?P<body>(.*\n)+?(?=(\n\n)|$))')
 
     def __init__(self, matcher):
-        self.functions = {}
+        self._functions = {}
         self.name = matcher.group('name')
-        self.parent = None if matcher.group('parent') == 'object' else matcher.group('parent')
-        self.docs = '\n'.join(map(lambda x: x.strip(), matcher.group('docs').split('\n')))
+        self.parent = None if matcher.group('parent') == 'object' else Module.classes[matcher.group('parent')]
+        self._docs = '\n'.join(map(lambda x: x.strip(), matcher.group('docs').split('\n')))
 
         for function_matcher in FunctionDef.REGEX.finditer(matcher.group('body')):
             name = function_matcher.group('name')
             if not name.startswith('_') or (name.startswith('__') and not name == '__init__'):
-                self.functions[name] = FunctionDef(function_matcher)
+                self._functions[name] = FunctionDef(function_matcher, self.parent)
+
+    @property
+    def docs(self):
+        if False and self.parent:
+            return self._docs + '\n' + self.parent.docs
+        else:
+            return self._docs
+
+    @property
+    def functions(self):
+        result = {}
+        for func in self._functions:
+            result[func] = self._functions[func]
+        if self.parent:
+            for func in self.parent.functions:
+                if func not in self._functions:
+                    result[func] = self.parent.functions[func]
+        return result
 
     def __str__(self):
         header = '### %s' % self.name
         docs = self.docs
 
-        def str_functions(functions):
-            res = []
-            for function_name in sorted(functions.keys()):
-                res.append(str(functions[function_name]))
-            return '\n\n'.join(res) + '\n'
-
-        if self.parent:
-            parent_functions = str_functions(Module.classes[self.parent].functions)
-        else:
-            parent_functions = ''
-        self_functions = str_functions(self.functions)
-        return '%s\n\n%s\n\n%s%s' % (header, docs, parent_functions, self_functions)
+        function_str = '\n\n'.join(map(lambda x: str(x[1]), sorted(self.functions.items()))) + '\n'
+        return '%s\n\n%s\n\n%s' % (header, docs, function_str)
 
 
 class Module(object):
@@ -123,8 +151,6 @@ if __name__ == '__main__':
         reference_file.write('> ### This reference file is currently in BETA\n')
         reference_file.write('> Therefore, there are a few known issues and future improvements:\n')
         reference_file.write('> - Public fields are not shown\n')
-        reference_file.write('> - Inherited functions do not show correctly (or at all)\n')
-        reference_file.write('> - Inherited docs are not shown\n')
         reference_file.write('> - Argument descriptors are not formatted\n\n')
         reference_file.write(Module.description())
         reference_file.write('## Class overview\n\n')
