@@ -34,6 +34,7 @@ print(folder.get_file('a/file.txt').status())
 # Print the name of all the files
 git.for_each_file(lambda x: print(x.path))
 ```
+The reference guide `REFERENCE.md`(BETA) and the examples will give you a more in-depth overview of the module.
 
 ## Installation
 To install the module simply run `pip install .` in the root of this repository.  
@@ -46,6 +47,6 @@ To run the tests for the module run: `python setup.py test`
 ## Future work
 - Improve the implementation for diffs  
   It now only records the metadata, making it impossible to reconstruct a file using all the Diffs in his history (except for its size).
-- Add tests
-- More documentation
+- Add more tests
+- Finalize the documentation generator
 - More examples
