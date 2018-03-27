@@ -69,7 +69,7 @@ class FunctionDef(object):
         else:
             signature = '%s(%s)' % (self.name, self.arguments)
 
-        return ('**%s%s**\n%s%s' % (signature, annotation, self.docs, self.arg_desc)).replace('[', '\[').replace(']', '\]')
+        return ('**%s%s**\n%s%s' % (signature.replace('_', '\\_'), annotation, self.docs, self.arg_desc)).replace('[', '\[').replace(']', '\]')
 
     @staticmethod
     def parse_argument_descriptors(raw):
