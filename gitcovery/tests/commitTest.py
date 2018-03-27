@@ -53,16 +53,16 @@ class CommitTest(unittest.TestCase):
 
         msg = 'Test failed for commit with sha %s' % sha
 
-        self.assertEqual(data['author'], self.instance.author().name, msg)
-        self.assertEqual(data['commit'], self.instance.commit().name, msg)
+        self.assertEqual(data['author'], self.instance.author.name, msg)
+        self.assertEqual(data['commit'], self.instance.commit.name, msg)
 
-        self.assertEqual(dp.parse(data['authorDate']), self.instance.author_date(), msg)
-        self.assertEqual(dp.parse(data['commitDate']), self.instance.commit_date(), msg)
+        self.assertEqual(dp.parse(data['authorDate']), self.instance.author_date, msg)
+        self.assertEqual(dp.parse(data['commitDate']), self.instance.commit_date, msg)
 
-        self.assertEqual(data['title'], self.instance.title(), msg)
-        self.assertEqual(data['msg'], self.instance.message(), msg)
+        self.assertEqual(data['title'], self.instance.title, msg)
+        self.assertEqual(data['msg'], self.instance.message, msg)
 
-        self.assertEqual(data['parents'], list(map(lambda x: x.sha, self.instance.parents())), msg)
+        self.assertEqual(data['parents'], list(map(lambda x: x.sha, self.instance.parents)), msg)
 
         self.assertEqual(data['numFiles'], len(self.instance.changes().data))
 

@@ -18,7 +18,7 @@ folder = git.get_folder('src/tests').children()
 folder = git.src.tests.children()               # Functionally equivalent
 
 # Get the author of the latest commit
-print(git.history()[0].author())
+print(git.history()[0].author)
 
 # Get changes made to a file in the last commit
 print(git.get_file('README.md').history()[0].changes(file='README.md'))

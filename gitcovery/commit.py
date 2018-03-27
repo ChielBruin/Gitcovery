@@ -122,6 +122,7 @@ class Commit(object):
         self._diff = None
         self._parents = []
 
+    @property
     def author(self):
         """
         :rtype: Author
@@ -130,6 +131,7 @@ class Commit(object):
         self.load()
         return self._author
 
+    @property
     def author_date(self):
         """
         :rtype: datetime.datetime
@@ -138,6 +140,7 @@ class Commit(object):
         self.load()
         return self._authorDate
 
+    @property
     def commit(self):
         """
         :rtype: Author
@@ -146,6 +149,7 @@ class Commit(object):
         self.load()
         return self._commit
 
+    @property
     def commit_date(self):
         """
         :rtype: datetime.datetime
@@ -154,6 +158,7 @@ class Commit(object):
         self.load()
         return self._commitDate
 
+    @property
     def title(self):
         """
         :rtype: str
@@ -162,6 +167,7 @@ class Commit(object):
         self.load()
         return self._title
 
+    @property
     def message(self):
         """
         :rtype: str
@@ -169,6 +175,15 @@ class Commit(object):
         """
         self.load()
         return self._msg
+
+    @property
+    def parents(self):
+        """
+        :rtype: List[Commit]
+        :return: A list of the parents of this commit
+        """
+        self.load()
+        return self._parents
 
     def changes(self, file_name=None):
         """
@@ -187,14 +202,6 @@ class Commit(object):
         else:
             return self._diff
 
-    def parents(self):
-        """
-        :rtype: List[Commit]
-        :return: A list of the parents of this commit
-        """
-        self.load()
-        return self._parents
-
     def __lt__(self, other):
         """
         Compare this commit with another based on the date of the commit.
@@ -209,7 +216,7 @@ class Commit(object):
 
         self.load()
 
-        return self.author_date() < other.author_date()
+        return self.author_date < other.author_date
 
     def __eq__(self, other):
         """
