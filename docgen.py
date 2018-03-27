@@ -1,6 +1,31 @@
 import re, os
 
 
+class FieldDef(object):
+    def __init__(self, matcher, parent):
+        self._docs = ''
+        self.name = matcher.group('name')
+        self._type = self.parse_arg_decription(matcher.group('arg_desc'))
+
+    def parse_arg_decription(self, annotation_str):
+        REGEX = re.compile('(:rtype:\s*(?P<type>.*)\n)\s*(:return:\s*(?P<desc>(.*\n*)*)\n?)?')
+        matcher = REGEX.search(annotation_str)
+        if matcher.group('desc'):
+            self._docs = matcher.group('desc')
+        return matcher.group('type').strip()
+
+    @property
+    def docs(self):
+        return self._docs
+
+    @property
+    def type(self):
+        return self._type
+
+    def __str__(self):
+        return('**%s (%s)**\n\n%s' % (self.name, self._type, self.docs)).replace('[', '\[').replace(']', '\]')
+
+
 class FunctionDef(object):
     REGEX = re.compile('(@(?P<annotation>\w*)\s*\n\s{4})?'
                        'def (?P<name>\w+)\s?\((?P<arguments>\w*(,\s\w+)*(?=,|\)))(,\s)?'
@@ -38,14 +63,13 @@ class FunctionDef(object):
             return ''
 
     def __str__(self):
-        header = '##### '
         annotation = ' - _static_ ' if (self.annotation == 'classmethod' or self.annotation == 'staticmethod') else ''
         if self.optional_arguments:
             signature = '%s(%s, %s)' % (self.name, self.arguments, self.optional_arguments)
         else:
             signature = '%s(%s)' % (self.name, self.arguments)
 
-        return ('%s%s%s\n%s%s' % (header, signature, annotation, self.docs, self.arg_desc)).replace('[', '\[').replace(']', '\]')
+        return ('**%s%s**\n%s%s' % (signature, annotation, self.docs, self.arg_desc)).replace('[', '\[').replace(']', '\]')
 
     @staticmethod
     def parse_argument_descriptors(raw):
@@ -62,6 +86,7 @@ class ClassDef(object):
                        '\s*"""\n(?P<docs>(.*\n)+?)\s*"""\n*(?P<body>(.*\n)+?(?=(\n\n)|$))')
 
     def __init__(self, matcher):
+        self._fields = {}
         self._functions = {}
         self.name = matcher.group('name')
         self.parent = None if matcher.group('parent') == 'object' else Module.classes[matcher.group('parent')]
@@ -70,7 +95,10 @@ class ClassDef(object):
         for function_matcher in FunctionDef.REGEX.finditer(matcher.group('body')):
             name = function_matcher.group('name')
             if not name.startswith('_') or (name.startswith('__') and not name == '__init__'):
-                self._functions[name] = FunctionDef(function_matcher, self.parent)
+                if function_matcher.group('annotation') == 'property':
+                    self._fields[name] = FieldDef(function_matcher, self.parent)
+                else:
+                    self._functions[name] = FunctionDef(function_matcher, self.parent)
 
     @property
     def docs(self):
@@ -90,12 +118,29 @@ class ClassDef(object):
                     result[func] = self.parent.functions[func]
         return result
 
+    @property
+    def fields(self):
+        result = {}
+        for field in self._fields:
+            result[field] = self._fields[field]
+        if self.parent:
+            for field in self.parent.fields:
+                if field not in self._fields:
+                    result[field] = self.parent.fields[field]
+        return result
+
     def __str__(self):
         header = '### %s' % self.name
         docs = self.docs
 
-        function_str = '\n\n'.join(map(lambda x: str(x[1]), sorted(self.functions.items()))) + '\n'
-        return '%s\n\n%s\n\n%s' % (header, docs, function_str)
+        field_str = '\n\n'.join(map(lambda x: str(x[1]), sorted(self.fields.items()))) + '\n' if self.fields else ''
+        function_str = '\n\n'.join(map(lambda x: str(x[1]), sorted(self.functions.items()))) + '\n' if self.functions else ''
+        res =  '%s\n\n%s\n\n' % (header, docs)
+        if field_str:
+            res += '#### Fields\n%s\n\n' % field_str
+        if function_str:
+            res += '#### Functions\n%s' % function_str
+        return res
 
 
 class Module(object):
