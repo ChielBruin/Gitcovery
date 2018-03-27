@@ -178,11 +178,11 @@ class GitFile(_AbsGitFile):
         :rtype: FileDiff
         :return: The diff between the from and to commit
         """
-        if type(from_commit) is str:
+        if isinstance(from_commit, str):
             from_commit = Commit.get_commit(from_commit)
         if to_commit is None:
             to_commit = Git.get_head()
-        elif type(to_commit) is str:
+        elif isinstance(to_commit, str):
             to_commit = Commit.get_commit(to_commit)
 
         assert from_commit < to_commit, 'The from commit should be older than the to commit'
@@ -199,7 +199,7 @@ class GitFile(_AbsGitFile):
         :rtype: str
         :return: The content of the file
         """
-        if type(commit) is str:
+        if isinstance(commit, str):
             sha = commit
         else:
             sha = commit.sha
@@ -239,7 +239,7 @@ class GitFile(_AbsGitFile):
         :rtype: int
         :return: The number of times the pattern occurred
         """
-        if type(pattern) is str:
+        if isinstance(pattern, str):
             pattern = re.compile(pattern)
 
         if at:
@@ -422,14 +422,14 @@ class GitFolder(_AbsGitFile):
 
     def get_file(self, path):
         f = self.get(path)
-        if type(f) is GitFile:
+        if isinstance(f, GitFile):
             return f
         else:
             raise IOError('%s is not a file' % path)
 
     def get_folder(self, path):
         f = self.get(path)
-        if type(f) is GitFolder:
+        if isinstance(f, GitFolder):
             return f
         else:
             raise NotADirectoryError('%s is not a folder' % path)

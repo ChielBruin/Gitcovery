@@ -204,7 +204,7 @@ class Commit(object):
         :rtype: bool
         :return: True when this commit is older than the given commit, False otherwise
         """
-        if not type(other) is Commit:
+        if not isinstance(other, Commit):
             raise TypeError
 
         self.load()
@@ -220,7 +220,7 @@ class Commit(object):
         :rtype: bool
         :return: True when they are equal, False otherwise
         """
-        if type(other) is Commit:
+        if isinstance(other, Commit):
             return self.sha == other.sha
         return False
 

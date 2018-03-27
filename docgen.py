@@ -215,7 +215,6 @@ if __name__ == '__main__':
         reference_file.write('**\[Generated for gitcovery version %s\]**\n\n' % Module.version())
         reference_file.write('> ### This reference file is currently in BETA\n')
         reference_file.write('> Therefore, there are a few known issues and future improvements:\n')
-        reference_file.write('> - Public fields are not shown\n')
         reference_file.write('> - Argument descriptors are not formatted\n\n')
         reference_file.write(Module.description())
         reference_file.write('## Class overview\n\n')
