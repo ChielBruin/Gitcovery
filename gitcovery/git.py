@@ -203,7 +203,7 @@ class Git(object):
         :type tag: str
         :param tag: The tag to get the Commit from
         :rtype: Commit
-        :return The commit associated with the tag
+        :return: The commit associated with the tag
         """
         if cls._tags is None:
             cls.get_tags()

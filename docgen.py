@@ -37,6 +37,8 @@ class FunctionDef(object):
                        'def (?P<name>\w+)\s?\((?P<arguments>\w*(,\s\w+)*(?=[,)]))(,\s)?'
                        '(?P<optional_arguments>\w+=\w+(,\s\w)*)?\):\n\s{8}"""(?P<docs>(\s{8}.*\n)+?\n)?'
                        '(?P<arg_desc>(\s{8}.*\n)+?)\s{8}"""\n(?P<body>(\s{8}.*\n)*)')
+    _ARG_DESCRIPTION_REGEX = re.compile('\s*:((((type)|(?P<raises>raise))\s(?P<name>\w+))|(rtype)|):\s*(?P<type>(.*))'
+                                        '(\n\s*:((param\s(?P=name))|(return)):\s*(?P<desc>.*))?')
 
     def __init__(self, matcher, parent):
         self.name = matcher.group('name')
@@ -62,9 +64,13 @@ class FunctionDef(object):
     @property
     def arg_desc(self):
         if self._arg_desc:
-            return '\n'.join(map(lambda x: '- %s' % x, self._arg_desc))
-        elif self.parent:
-            return self.parent.arg_desc
+            res = []
+            for name, typ, desc in self._arg_desc:
+                desc_str = '  \n  %s' % '\n'.join(map(lambda x : '  ' + x.strip(), desc.split('\n')))
+                res.append('- **`%s`: %s**' % (name, typ) + desc_str)
+            return '\n'.join(res)
+        elif self.parent and self.name in self.parent.functions:
+            return self.parent.functions[self.name].arg_desc
         else:
             return ''
 
@@ -78,13 +84,17 @@ class FunctionDef(object):
 
         return ('**%s%s**\n%s%s' % (signature, annotation, self.docs, self.arg_desc)).replace('[', '\[').replace(']', '\]')
 
-    @staticmethod
-    def parse_argument_descriptors(raw):
+    @classmethod
+    def parse_argument_descriptors(cls, raw):
         res = []
-        for line in raw.split('\n'):
-            line = line.strip()
-            if line:
-                res.append(line)
+        for desc_matcher in cls._ARG_DESCRIPTION_REGEX.finditer(raw):
+            if desc_matcher.group('name'):
+                if desc_matcher.group('raises'):
+                    res.append(('Raises', desc_matcher.group('name'), desc_matcher.group('type')))
+                else:
+                    res.append((desc_matcher.group('name'), desc_matcher.group('type'), desc_matcher.group('desc')))
+            else:
+                res.append(('Returns', desc_matcher.group('type'), desc_matcher.group('desc')))
         return res
 
 
@@ -213,9 +223,6 @@ if __name__ == '__main__':
     with open('REFERENCE.md', 'w') as reference_file:
         reference_file.write('# Gitcovery reference documentation\n')
         reference_file.write('**\[Generated for gitcovery version %s\]**\n\n' % Module.version())
-        reference_file.write('> ### This reference file is currently in BETA\n')
-        reference_file.write('> Therefore, there are a few known issues and future improvements:\n')
-        reference_file.write('> - Argument descriptors are not formatted\n\n')
         reference_file.write(Module.description())
         reference_file.write('## Class overview\n\n')
 
