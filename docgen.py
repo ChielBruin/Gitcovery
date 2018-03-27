@@ -63,7 +63,7 @@ class FunctionDef(object):
             return ''
 
     def __str__(self):
-        annotation = ' - _static_ ' if (self.annotation == 'classmethod' or self.annotation == 'staticmethod') else ''
+        annotation = ' - _static_' if (self.annotation == 'classmethod' or self.annotation == 'staticmethod') else ''
         if self.optional_arguments:
             signature = '%s(%s, %s)' % (self.name, self.arguments, self.optional_arguments)
         else:
