@@ -2,14 +2,19 @@ import re, os
 
 
 class FieldDef(object):
-    def __init__(self, matcher, parent):
-        self._docs = ''
-        self.name = matcher.group('name')
-        self._type = self.parse_arg_decription(matcher.group('arg_desc'))
+    STATIC_REGEX = re.compile('((?P<docs>(\s{4}# .*\n)+)\s{4})?(?P<name>\w+)\s?=\s?.*# (?P<arg_desc>:type:\s*.*)\n')
+    REGEX_INIT = re.compile('((?P<docs>(\s{8}# .*\n)*)\s{8})?self.(?P<name>\w+)\s?=\s?.*# (?P<arg_desc>:type:\s*.*)\n')
+    _REGEX_ANNOTATION = re.compile('(:r?type:\s*(?P<type>.*)\n?)(\s*:return:\s*(?P<desc>(.*\n*)*)\n?)?')
 
-    def parse_arg_decription(self, annotation_str):
-        REGEX = re.compile('(:rtype:\s*(?P<type>.*)\n)\s*(:return:\s*(?P<desc>(.*\n*)*)\n?)?')
-        matcher = REGEX.search(annotation_str)
+    def __init__(self, matcher, parent, static):
+        self._docs = matcher.group('docs') if matcher.group('docs') else ''
+        self._docs = '\n'.join(map(lambda x: x.strip()[2:], self._docs.split('\n')))
+        self.name = matcher.group('name')
+        self._type = self.parse_arg_description(matcher.group('arg_desc'))
+        self.static = static
+
+    def parse_arg_description(self, annotation_str):
+        matcher = self._REGEX_ANNOTATION.search(annotation_str)
         if matcher.group('desc'):
             self._docs = matcher.group('desc')
         return matcher.group('type').strip()
@@ -23,14 +28,15 @@ class FieldDef(object):
         return self._type
 
     def __str__(self):
-        return('**%s (%s)**\n\n%s' % (self.name, self._type, self.docs)).replace('[', '\[').replace(']', '\]')
+        static = ' - _static_' if self.static else ''
+        return('**%s (%s)%s**\n\n%s' % (self.name, self._type, static, self.docs)).replace('[', '\[').replace(']', '\]')
 
 
 class FunctionDef(object):
     REGEX = re.compile('(@(?P<annotation>\w*)\s*\n\s{4})?'
-                       'def (?P<name>\w+)\s?\((?P<arguments>\w*(,\s\w+)*(?=,|\)))(,\s)?'
+                       'def (?P<name>\w+)\s?\((?P<arguments>\w*(,\s\w+)*(?=[,)]))(,\s)?'
                        '(?P<optional_arguments>\w+=\w+(,\s\w)*)?\):\n\s{8}"""(?P<docs>(\s{8}.*\n)+?\n)?'
-                       '(?P<arg_desc>(\s{8}.*\n)+?)\s{8}"""')
+                       '(?P<arg_desc>(\s{8}.*\n)+?)\s{8}"""\n(?P<body>(\s{8}.*\n)*)')
 
     def __init__(self, matcher, parent):
         self.name = matcher.group('name')
@@ -68,8 +74,9 @@ class FunctionDef(object):
             signature = '%s(%s, %s)' % (self.name, self.arguments, self.optional_arguments)
         else:
             signature = '%s(%s)' % (self.name, self.arguments)
+        signature = signature.replace('_', '\\_')
 
-        return ('**%s%s**\n%s%s' % (signature.replace('_', '\\_'), annotation, self.docs, self.arg_desc)).replace('[', '\[').replace(']', '\]')
+        return ('**%s%s**\n%s%s' % (signature, annotation, self.docs, self.arg_desc)).replace('[', '\[').replace(']', '\]')
 
     @staticmethod
     def parse_argument_descriptors(raw):
@@ -92,11 +99,18 @@ class ClassDef(object):
         self.parent = None if matcher.group('parent') == 'object' else Module.classes[matcher.group('parent')]
         self._docs = '\n'.join(map(lambda x: x.strip(), matcher.group('docs').split('\n')))
 
+        for field_matcher in FieldDef.STATIC_REGEX.finditer(matcher.group('body')):
+            name = field_matcher.group('name')
+            if not name.startswith('_'):
+                self._fields[name] = FieldDef(field_matcher, self.parent, static=True)
+
         for function_matcher in FunctionDef.REGEX.finditer(matcher.group('body')):
             name = function_matcher.group('name')
+            if name == '__init__':
+                self.parse_fields(function_matcher.group('body'))
             if not name.startswith('_') or (name.startswith('__') and not name == '__init__'):
                 if function_matcher.group('annotation') == 'property':
-                    self._fields[name] = FieldDef(function_matcher, self.parent)
+                    self._fields[name] = FieldDef(function_matcher, self.parent, static=False)
                 else:
                     self._functions[name] = FunctionDef(function_matcher, self.parent)
 
@@ -141,6 +155,12 @@ class ClassDef(object):
         if function_str:
             res += '#### Functions\n%s' % function_str
         return res
+
+    def parse_fields(self, init_body):
+        for field_matcher in FieldDef.REGEX_INIT.finditer(init_body):
+            name = field_matcher.group('name')
+            if not name.startswith('_'):
+                self._fields[name] = FieldDef(field_matcher, self.parent, static=False)
 
 
 class Module(object):
