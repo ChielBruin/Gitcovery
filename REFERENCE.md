@@ -48,14 +48,32 @@ Stores the name and email of the author alongside with all the commits that are 
 This class also keeps a static cache of all the authors in the repository.
 
 
-##### list() - _static_ 
+#### Fields
+**commits (List\[Commit\])**
+
+The commits made by this author.
+
+
+**emails (List\[str\])**
+
+The email addresses of this author.
+
+
+**name (str)**
+
+The name of the author.
+
+
+
+#### Functions
+**list() - _static_**
 
 Get a list of all authors from the repository.
 
 - :rtype: List\[Author\]
 - :return: A list of all authors
 
-##### register_commit(commit)
+**register\_commit(commit)**
 
 Register a commit to this author.
 
@@ -64,7 +82,7 @@ Register a commit to this author.
 - :rtype: bool
 - :return: True when registration was successful, False otherwise
 
-##### register_email(email)
+**register\_email(email)**
 
 Register a email address to this author.
 
@@ -78,21 +96,39 @@ Register a email address to this author.
 Class representing a code blob in the diff of a file.
 
 
-##### __len__()
+#### Fields
+**added (List\[str\])**
+
+The lines that were added in this blob.
+
+
+**changes (int)**
+
+The number of lines changed in this blob.
+
+
+**removed (List\[str\])**
+
+The lines that were removed in this blob.
+
+
+
+#### Functions
+**\_\_len\_\_()**
 
 Get the number of changed lines in this diff.
 
 - :rtype: int
 - :return: The number of changed lines in this diff
 
-##### num_added()
+**num\_added()**
 
 Get the number of added lines in this diff.
 
 - :rtype: int
 - :return: The number of added lines
 
-##### num_removed()
+**num\_removed()**
 
 Get the number of removed lines in this diff.
 
@@ -106,7 +142,50 @@ A commit stores all the relevant data on a commit like the author,
 the date of the commit, the commit message and the diff.
 
 
-##### __eq__(other)
+#### Fields
+**author (Author)**
+
+The author of this commit
+
+
+**author_date (datetime.datetime)**
+
+The author date
+
+
+**commit (Author)**
+
+The commit author of this commit
+
+
+**commit_date (datetime.datetime)**
+
+The commit author date
+
+
+**message (str)**
+
+The commit message
+
+
+**parents (List\[Commit\])**
+
+A list of the parents of this commit
+
+
+**sha (str)**
+
+The SHA hash of the commit.
+
+
+**title (str)**
+
+The commit title
+
+
+
+#### Functions
+**\_\_eq\_\_(other)**
 
 Two Commits are equal when their hashes match.
 
@@ -115,7 +194,7 @@ Two Commits are equal when their hashes match.
 - :rtype: bool
 - :return: True when they are equal, False otherwise
 
-##### __lt__(other)
+**\_\_lt\_\_(other)**
 
 Compare this commit with another based on the date of the commit.
 
@@ -124,15 +203,7 @@ Compare this commit with another based on the date of the commit.
 - :rtype: bool
 - :return: True when this commit is older than the given commit, False otherwise
 
-##### author()
-- :rtype: Author
-- :return: The author of this commit
-
-##### author_date()
-- :rtype: datetime.datetime
-- :return: The author date
-
-##### changes(, file_name=None)
+**changes(, file\_name=None)**
 
 Get the diff for this commit.
 When file_name is given, only the diff for that file is returned.
@@ -142,22 +213,14 @@ When file_name is given, only the diff for that file is returned.
 - :rtype: _DiffContainer
 - :return: The diff of this commit
 
-##### commit()
-- :rtype: Author
-- :return: The commit author of this commit
-
-##### commit_date()
-- :rtype: datetime.datetime
-- :return: The commit author date
-
-##### for_each_parent(func)
+**for\_each\_parent(func)**
 
 Execute a function for this commit and all its parents (AKA the tree that this commit is part of).
 
 - :type func: Commit -> None
 - :param func: The function to apply for each parent recursively
 
-##### get_commit(sha) - _static_ 
+**get\_commit(sha) - _static_**
 
 Get a commit with the given hash from the cache.
 When it is not present in the cache, a new commit is created.
@@ -168,7 +231,7 @@ When it is not present in the cache, a new commit is created.
 - :return: The requested Commit object
 - :raise: Exception, when the given hash is empty
 
-##### load()
+**load()**
 
 Load the data for this commit.
 This function calls 'git show' and parses the output.
@@ -176,7 +239,7 @@ This function calls 'git show' and parses the output.
 - :rtype: bool
 - :return: True when successfully loaded, False when already loaded
 
-##### load_all(, load_diff=False) - _static_ 
+**load\_all(, load\_diff=False) - _static_**
 
 Preload all the metadata of all commits.
 This method should be used when loading a large number of commits,
@@ -188,19 +251,7 @@ You can specify to load the diffs, but this is not recommended unless you need t
 - :type load_diff: bool
 - :return load_load_diff: Whether to load the diff data
 
-##### message()
-- :rtype: str
-- :return: The commit message
-
-##### parents()
-- :rtype: List\[Commit\]
-- :return: A list of the parents of this commit
-
-##### title()
-- :rtype: str
-- :return: The commit title
-
-##### unload()
+**unload()**
 - Unload all the cached data for this commit.
 
 ### Diff
@@ -208,21 +259,29 @@ You can specify to load the diffs, but this is not recommended unless you need t
 The diff of an entire commit. This diff consists of multiple FileDiffs.
 
 
-##### __len__()
+#### Fields
+**data (Dict\[str, FileDiff\])**
+
+The files and their diffs stored in this diff
+
+
+
+#### Functions
+**\_\_len\_\_()**
 
 Get the number of changed lines in this diff.
 
 - :rtype: int
 - :return: The number of changed lines in this diff
 
-##### add(file_diff)
+**add(file\_diff)**
 
 Add a file diff to this diff.
 
 - :type file_diff: FileDiff
 - :param file_diff: The file diff to add
 
-##### get_file(fname)
+**get\_file(fname)**
 
 Get the FileDiff of the file with the given name.
 
@@ -231,14 +290,14 @@ Get the FileDiff of the file with the given name.
 - :rtype: FileDiff
 - :return: The FileDiff for the given file
 
-##### num_added()
+**num\_added()**
 
 Get the number of added lines in this diff.
 
 - :rtype: int
 - :return: The number of added lines
 
-##### num_removed()
+**num\_removed()**
 
 Get the number of removed lines in this diff.
 
@@ -250,21 +309,29 @@ Get the number of removed lines in this diff.
 A diff for a file. This diff contains one or more diff blobs.
 
 
-##### __len__()
+#### Fields
+**name (str)**
+
+The name of the file.
+
+
+
+#### Functions
+**\_\_len\_\_()**
 
 Get the number of changed lines in this diff.
 
 - :rtype: int
 - :return: The number of changed lines in this diff
 
-##### num_added()
+**num\_added()**
 
 Get the number of added lines in this diff.
 
 - :rtype: int
 - :return: The number of added lines
 
-##### num_removed()
+**num\_removed()**
 
 Get the number of removed lines in this diff.
 
@@ -282,7 +349,15 @@ In addition to this, the Git class also contains a cache of all the commits
 and the tags in the repository and a reference to HEAD and the initial commit.
 
 
-##### checkout(name) - _static_ 
+#### Fields
+**root (GitFolder) - _static_**
+
+The root of the repository, `None` when the root is not set.
+
+
+
+#### Functions
+**checkout(name) - _static_**
 
 Checkout a specific branch in the repository.
 Calling this function is identical to calling `git checkout name` and setting the root again.
@@ -295,7 +370,7 @@ advised to use the returned root to reconstruct all references.
 - :rtype: GitFolder
 - :return: A reference to the root
 
-##### clone(loc, address, update=False) - _static_ 
+**clone(loc, address, update=False) - _static_**
 
 Clone a git repository to the specified location and return a reference to the root.
 When there is already a folder with the correct name at that location, cloning is skipped.
@@ -312,14 +387,14 @@ Optionally, you could update the repository (when it already exists) by setting 
 - :rtype: GitFolder
 - :return: A reference to the root
 
-##### get_head() - _static_ 
+**get\_head() - _static_**
 
 Get the commit associated with HEAD.
 
 - :rtype: Commit
 - :return: The commit at HEAD
 
-##### get_initial_commits() - _static_ 
+**get\_initial\_commits() - _static_**
 
 Get the initial commits of this repository.
 Note that it is possible to have multiple roots, therefore a list is returned.
@@ -327,7 +402,7 @@ Note that it is possible to have multiple roots, therefore a list is returned.
 - :rtype: List\[Commit\]
 - :return: A list of initial commits
 
-##### get_tag(tag) - _static_ 
+**get\_tag(tag) - _static_**
 
 Get the Commit associated with the given tag.
 
@@ -336,7 +411,7 @@ Get the Commit associated with the given tag.
 - :rtype: Commit
 - :return The commit associated with the tag
 
-##### get_tags() - _static_ 
+**get\_tags() - _static_**
 
 Get a list of all the tags of this project.
 These tags can directly be passed to 'Git.getTag(tag)'
@@ -344,7 +419,7 @@ These tags can directly be passed to 'Git.getTag(tag)'
 - :rtype: List\[str\]
 - :return: A list of all tags, without ordering.
 
-##### get_tags_by_commit() - _static_ 
+**get\_tags\_by\_commit() - _static_**
 
 Get a list of all the tags and their commit in the following format:
 \[(Commit, tag), ...\], this list can be sorted in chronological order using the builtin sort
@@ -352,7 +427,7 @@ Get a list of all the tags and their commit in the following format:
 - :rtype: (List\[(Commit, str)\])
 - :return: A list of all tags and commits.
 
-##### set_root(root) - _static_ 
+**set\_root(root) - _static_**
 
 Set the root of the repository to the specified location.
 When not using the clone-function, this is the first thing you should call when using the module.
@@ -372,7 +447,25 @@ methods to get the contents of this file at different moments in time
 and methods for running metrics on those contents.
 
 
-##### __len__()
+#### Fields
+**name (str)**
+
+The name of this file.
+
+
+**path (str)**
+
+The path of the file, this can be absolute
+
+
+**relative_path (str)**
+
+The path relative to the repository root
+
+
+
+#### Functions
+**\_\_len\_\_()**
 
 Get the length of this file in characters.
 If you need the length in lines, please use the GitFile.count() functions.
@@ -380,11 +473,11 @@ If you need the length in lines, please use the GitFile.count() functions.
 - :rtype: int
 - :return: The length of this file in characters
 
-##### __str__()
+**\_\_str\_\_()**
 - :rtype: str
 - :return: The contents of this file
 
-##### at(commit)
+**at(commit)**
 
 Get the contents of this file at the given commit.
 
@@ -393,11 +486,11 @@ Get the contents of this file at the given commit.
 - :rtype: str
 - :return: The content of the file
 
-##### changes()
+**changes()**
 - :rtype: List\[FileDiff\]
 - :return: For each of the commits in the history, the relevant part of the diff
 
-##### changes_from(from_commit, to_commit=None)
+**changes\_from(from\_commit, to\_commit=None)**
 
 Get the diff of this file between two commits.
 By default this is between the HEAD and the specified commit.
@@ -409,7 +502,7 @@ By default this is between the HEAD and the specified commit.
 - :rtype: FileDiff
 - :return: The diff between the from and to commit
 
-##### count(pattern, at=None)
+**count(pattern, at=None)**
 
 Count the number of occurrences of the pattern in the file contents.
 This function does not count using a regex, but simple string comparisons.
@@ -421,14 +514,14 @@ This function does not count using a regex, but simple string comparisons.
 - :rtype: int
 - :return: The number of times the pattern occurred
 
-##### for_each_file(lamb)
+**for\_each\_file(lamb)**
 
 Execute a function for this file and each of its children.
 
 - :type lamb: GitFile -> None
 - :param lamb: The function to execute on each file
 
-##### get(path)
+**get(path)**
 
 Get a file that is a child of this file.
 When you know that the requested file is a folder or a file,
@@ -440,7 +533,7 @@ you should use the more specific versions of this call.
 - :return: The file with the given path
 - :raise IOError: When the file is not found
 
-##### get_file(path)
+**get\_file(path)**
 
 Get a file that is a child of this file.
 
@@ -450,7 +543,7 @@ Get a file that is a child of this file.
 - :return: The file with the given path
 - :raise IOError: When the file is not found
 
-##### history()
+**history()**
 
 Get the history of this file as a list of commits.
 These commits are stored new -> old.
@@ -458,15 +551,11 @@ These commits are stored new -> old.
 - :rtype: List\[Commit\]
 - :return: A list of all the commits that made changes to this file
 
-##### parent()
+**parent()**
 - :rtype: GitFolder
 - :return: The parent folder of this folder/file
 
-##### path()
-- :rtype: str
-- :return: The path of the file, this can be absolute
-
-##### regex_count(pattern, at=None)
+**regex\_count(pattern, at=None)**
 
 Count the number of occurrences of the pattern in the file contents.
 This function uses a regex, and accepts both compiled and non-compiled regexes.
@@ -478,11 +567,7 @@ This function uses a regex, and accepts both compiled and non-compiled regexes.
 - :rtype: int
 - :return: The number of times the pattern occurred
 
-##### relative_path()
-- :rtype: str
-- :return: The path relative to the repository root
-
-##### status()
+**status()**
 
 Get a string representing the status of the file.
 The following statuses can be used: M (modified), N (new), D (removed), - (unchanged)
@@ -498,7 +583,25 @@ This object contains functions to get its children (both files and other folders
 Child folders can also directly be accessed via field access, eg: `folder.get_folder('foo') == folder.foo`
 
 
-##### __getattr__(name)
+#### Fields
+**name (str)**
+
+The name of this file.
+
+
+**path (str)**
+
+The path of the file, this can be absolute
+
+
+**relative_path (str)**
+
+The path relative to the repository root
+
+
+
+#### Functions
+**\_\_getattr\_\_(name)**
 
 Get a contained folder via direct field access.
 
@@ -508,13 +611,13 @@ Get a contained folder via direct field access.
 - :return: The folder
 - :raise IOError: When the folder is not found
 
-##### __str__()
+**\_\_str\_\_()**
 - Get the string representation of this folder.
 - This consists of the names of all loders and files separated by a comma.
 - :rtype: str
 - :return: A string representation of this folder.
 
-##### children()
+**children()**
 
 Get a dictionary of all the children in this folder.
 This list does not contain files excluded in the gitignore.
@@ -522,22 +625,22 @@ This list does not contain files excluded in the gitignore.
 - :rtype: Dict\[str, GitFile\]
 - :return: A dictionary containing all children
 
-##### files()
+**files()**
 - :rtype: Dict\[str, GitFile\]
 - :return: All the files contained in this folder
 
-##### folders()
+**folders()**
 - :rtype: Dict\[str, GitFolder\]
 - :return: All the folders contained in this folder
 
-##### for_each_file(lamb)
+**for\_each\_file(lamb)**
 
 Execute a function for this file and each of its children.
 
 - :type lamb: GitFile -> None
 - :param lamb: The function to execute on each file
 
-##### get(path)
+**get(path)**
 
 Get a file that is a child of this file.
 When you know that the requested file is a folder or a file,
@@ -549,7 +652,7 @@ you should use the more specific versions of this call.
 - :return: The file with the given path
 - :raise IOError: When the file is not found
 
-##### get_file(path)
+**get\_file(path)**
 
 Get a file that is a child of this file.
 
@@ -559,7 +662,7 @@ Get a file that is a child of this file.
 - :return: The file with the given path
 - :raise IOError: When the file is not found
 
-##### history()
+**history()**
 
 Get the history of this file as a list of commits.
 These commits are stored new -> old.
@@ -567,19 +670,11 @@ These commits are stored new -> old.
 - :rtype: List\[Commit\]
 - :return: A list of all the commits that made changes to this file
 
-##### parent()
+**parent()**
 - :rtype: GitFolder
 - :return: The parent folder of this folder/file
 
-##### path()
-- :rtype: str
-- :return: The path of the file, this can be absolute
-
-##### relative_path()
-- :rtype: str
-- :return: The path relative to the repository root
-
-##### status()
+**status()**
 
 Get a string representing the status of the file.
 The following statuses can be used: M (modified), N (new), D (removed), - (unchanged)
