@@ -11,7 +11,7 @@ class Author(object):
 
     This class also keeps a static cache of all the authors in the repository.
     """
-    _authors = {}
+    _authors = {}  # :type: Dict[str, Author]
     _AUTHOR_REGEX = re.compile('(?P<name>.+)\n(?P<email>.+)\n(?P<commit>.+)\n' +
                                '(?P<commit_email>.+)\n(?P<sha>[a-f0-9]+)\n\n')
 
@@ -24,9 +24,13 @@ class Author(object):
         :type email: str
         :param email: The email of the author
         """
-        self.name = name
-        self.emails = [email]
-        self.commits = []
+
+        # The name of the author.
+        self.name = name       # :type: str
+        # The email addresses of this author.
+        self.emails = [email]  # :type: List[str]
+        # The commits made by this author.
+        self.commits = []      # :type: List[Commit]
 
     def register_commit(self, commit):
         """

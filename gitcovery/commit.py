@@ -19,7 +19,7 @@ class Commit(object):
                                '(?P<commit>.+)\n(?P<commitMail>.+)\n(?P<commitDate>[0-9\-:\s+]+)\n' +
                                '(?P<title>.*)(?P<message>(.*\n)*?(?=(diff --git)|\Z|([0-9a-f]+\n)))?' +
                                '(?P<diff>diff (.*\n)*?(?=([a-f0-9]+\n)|\Z))?')
-    _commits = {}
+    _commits = {}  # :type: Dict[str, Commit]
 
     def __init__(self, sha, preload=False):
         """
@@ -32,7 +32,8 @@ class Commit(object):
         :type preload: bool
         :param preload: Whether to load all the data directly, False by default
         """
-        self.sha = sha
+        # The SHA hash of the commit.
+        self.sha = sha         # :type: str
         self._author = None
         self._authorDate = ''
         self._commit = None

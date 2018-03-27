@@ -3,7 +3,6 @@
 
 > ### This reference file is currently in BETA
 > Therefore, there are a few known issues and future improvements:
-> - Public fields are not shown
 > - Argument descriptors are not formatted
 
 

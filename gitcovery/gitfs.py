@@ -26,13 +26,14 @@ class _AbsGitFile(object):
         # Make sure the file exists
         assert os.path.exists(path) is True, 'The file %s does not exist' % path
 
+        self._path = ''
+        # The name of this file.
+        self.name = path  # :type: str
+
         if os.sep in path:
             last_sep = len(path) - 1 - path[::-1].index('/')
             self._path = path[:last_sep]
             self.name = path[last_sep + 1:]
-        else:
-            self._path = ''
-            self.name = path
 
     @property
     def path(self):
@@ -296,10 +297,10 @@ class GitFolder(_AbsGitFile):
     This object contains functions to get its children (both files and other folders).
     Child folders can also directly be accessed via field access, eg: `folder.get_folder('foo') == folder.foo`
     """
-    _children = {}
-    _files = {}
-    _folders = {}
-    _gitignore = []
+    _children = {}   # :type: Dict[str, _AbsGitFile]
+    _files = {}      # :type: Dict[str, GitFile]
+    _folders = {}    # :type: Dict[str, GitFolder]
+    _gitignore = []  # :type: List[str]
 
     def __init__(self, path, gitignore=None):
         """

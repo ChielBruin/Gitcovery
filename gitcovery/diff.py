@@ -85,9 +85,13 @@ class BlobDiff(_Diffable):
         :param lines: The lines contained in the blob
         """
         # TODO: Store the actual diff data somehow
-        self.added = []
-        self.removed = []
-        self.changes = 0
+
+        # The lines that were added in this blob.
+        self.added = []    # :type: List[str]
+        # The lines that were removed in this blob.
+        self.removed = []  # :type: List[str]
+        # The number of lines changed in this blob.
+        self.changes = 0   # :type: int
 
         added_count = 0
         removed_count = 0
@@ -133,7 +137,8 @@ class FileDiff(_DiffContainer):
         :param diff: The raw diff string to parse
         """
         super(FileDiff, self).__init__([])
-        self.name = fname
+        # The name of the file.
+        self.name = fname  # :type: str
 
         # For each blob in the diff
         match_iter = self._REGEX_FILEDIFF.finditer(diff)
@@ -159,7 +164,8 @@ class Diff(_DiffContainer):
         :param diffstr: The raw diff string to parse
         """
         super(Diff, self).__init__([])
-        self.data = {}
+        # The files and their diffs stored in this diff
+        self.data = {}  # :type: Dict[str, FileDiff]
         if not diffstr:     # Empty diff, do not parse
             return
         match_iter = self._REGEX_DIFF.finditer(diffstr)

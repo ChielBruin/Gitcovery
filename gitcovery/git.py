@@ -15,13 +15,14 @@ class Git(object):
     In addition to this, the Git class also contains a cache of all the commits
     and the tags in the repository and a reference to HEAD and the initial commit.
     """
-    _decode_error_policy = 'strict'
-    _char_encoding = 'utf-8'
+    _decode_error_policy = 'strict'  # :type: str
+    _char_encoding = 'utf-8'         # :type: str
 
-    _tags = None
-    _initialCommits = []
-    _head = None
-    root = None
+    _tags = None          # :type: Dict[str, Commit] | None
+    _initialCommits = []  # :type: List[Commit]
+    _head = None          # :type: Commit
+    # The root of the repository, `None` when the root is not set.
+    root = None  # :type: GitFolder
 
     # Regex for matching tags and their commit hashes
     _REGEX_TAGS = re.compile('(?P<commit>[0-9a-z]+) refs/tags/(?P<tag>.*)')
