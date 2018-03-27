@@ -34,7 +34,14 @@ print(folder.get_file('a/file.txt').status())
 # Print the name of all the files
 git.for_each_file(lambda x: print(x.path))
 ```
-The reference guide `REFERENCE.md`(BETA) and the examples will give you a more in-depth overview of the module.
+
+To get a more in depth understanding of the module, take a look at the following sources:
+- `exmples/`
+  A folder containing examples on how this module can be used. These examples include:
+  - A basic example showing a little bit of everything
+  - Plotting the file size of `README.md` over the evolution of a repository
+- `REFERENCE.md`
+  A reference document with all the available classes and their functions and fields
 
 ## Installation
 To install the module simply run `pip install .` in the root of this repository.  
@@ -48,5 +55,4 @@ To run the tests for the module run: `python setup.py test`
 - Improve the implementation for diffs  
   It now only records the metadata, making it impossible to reconstruct a file using all the Diffs in his history (except for its size).
 - Add more tests
-- Finalize the documentation generator
 - More examples

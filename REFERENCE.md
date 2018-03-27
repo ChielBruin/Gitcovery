@@ -1,9 +1,5 @@
 # Gitcovery reference documentation
-**\[Generated for gitcovery version 0.3\]**
-
-> ### This reference file is currently in BETA
-> Therefore, there are a few known issues and future improvements:
-> - Argument descriptors are not formatted
+**\[Generated for gitcovery version 0.3.1\]**
 
 
 **TODO** Introduction here
@@ -70,26 +66,26 @@ The name of the author.
 
 Get a list of all authors from the repository.
 
-- :rtype: List\[Author\]
-- :return: A list of all authors
+- **`Returns`: List\[Author\]**  
+    A list of all authors
 
 **register\_commit(commit)**
 
 Register a commit to this author.
 
-- :type commit: Commit
-- :param commit: The commit to register
-- :rtype: bool
-- :return: True when registration was successful, False otherwise
+- **`commit`: Commit**  
+    The commit to register
+- **`Returns`: bool**  
+    True when registration was successful, False otherwise
 
 **register\_email(email)**
 
 Register a email address to this author.
 
-- :type email: str
-- :param email: The commit to register
-- :rtype: bool
-- :return: True when registration was successful, False otherwise
+- **`email`: str**  
+    The commit to register
+- **`Returns`: bool**  
+    True when registration was successful, False otherwise
 
 ### BlobDiff
 
@@ -118,22 +114,22 @@ The lines that were removed in this blob.
 
 Get the number of changed lines in this diff.
 
-- :rtype: int
-- :return: The number of changed lines in this diff
+- **`Returns`: int**  
+    The number of changed lines in this diff
 
 **num\_added()**
 
 Get the number of added lines in this diff.
 
-- :rtype: int
-- :return: The number of added lines
+- **`Returns`: int**  
+    The number of added lines
 
 **num\_removed()**
 
 Get the number of removed lines in this diff.
 
-- :rtype: int
-- :return: The number of removed lines
+- **`Returns`: int**  
+    The number of removed lines
 
 ### Commit
 
@@ -189,55 +185,54 @@ The commit title
 
 Two Commits are equal when their hashes match.
 
-- :type other: object
-- :param other: The object to compare with
-- :rtype: bool
-- :return: True when they are equal, False otherwise
+- **`other`: object**  
+    The object to compare with
+- **`Returns`: bool**  
+    True when they are equal, False otherwise
 
 **\_\_lt\_\_(other)**
 
 Compare this commit with another based on the date of the commit.
 
-- :type other: Commit
-- :param other: The object to compare to
-- :rtype: bool
-- :return: True when this commit is older than the given commit, False otherwise
+- **`other`: Commit**  
+    The object to compare to
+- **`Returns`: bool**  
+    True when this commit is older than the given commit, False otherwise
 
 **changes(, file\_name=None)**
 
 Get the diff for this commit.
 When file_name is given, only the diff for that file is returned.
 
-- :type file_name: str
-- :param file_name: Optional file name to get the diff from
-- :rtype: _DiffContainer
-- :return: The diff of this commit
+- **`file_name`: str**  
+    Optional file name to get the diff from
+- **`Returns`: _DiffContainer**  
+    The diff of this commit
 
 **for\_each\_parent(func)**
 
 Execute a function for this commit and all its parents (AKA the tree that this commit is part of).
 
-- :type func: Commit -> None
-- :param func: The function to apply for each parent recursively
+- **`func`: Commit -> None**  
+    The function to apply for each parent recursively
 
 **get\_commit(sha) - _static_**
 
 Get a commit with the given hash from the cache.
 When it is not present in the cache, a new commit is created.
 
-- :type sha: str
-- :param sha: The SHA hash of the commit to get
-- :rtype: Commit
-- :return: The requested Commit object
-- :raise: Exception, when the given hash is empty
+- **`sha`: str**  
+    The SHA hash of the commit to get
+- **`Returns`: Commit**  
+    The requested Commit object
 
 **load()**
 
 Load the data for this commit.
 This function calls 'git show' and parses the output.
 
-- :rtype: bool
-- :return: True when successfully loaded, False when already loaded
+- **`Returns`: bool**  
+    True when successfully loaded, False when already loaded
 
 **load\_all(, load\_diff=False) - _static_**
 
@@ -248,11 +243,11 @@ By default the meatadata does not include the diffs.
 This is done to reduce the execution time and most notably the memory usage.
 You can specify to load the diffs, but this is not recommended unless you need the diffs for all commits.
 
-- :type load_diff: bool
-- :return load_load_diff: Whether to load the diff data
+- **`load_diff`: bool**  
+    Whether to load the diff data
 
 **unload()**
-- Unload all the cached data for this commit.
+
 
 ### Diff
 
@@ -271,38 +266,38 @@ The files and their diffs stored in this diff
 
 Get the number of changed lines in this diff.
 
-- :rtype: int
-- :return: The number of changed lines in this diff
+- **`Returns`: int**  
+    The number of changed lines in this diff
 
 **add(file\_diff)**
 
 Add a file diff to this diff.
 
-- :type file_diff: FileDiff
-- :param file_diff: The file diff to add
+- **`file_diff`: FileDiff**  
+    The file diff to add
 
 **get\_file(fname)**
 
 Get the FileDiff of the file with the given name.
 
-- :type fname: str
-- :param fname: The filename to get the diff for
-- :rtype: FileDiff
-- :return: The FileDiff for the given file
+- **`fname`: str**  
+    The filename to get the diff for
+- **`Returns`: FileDiff**  
+    The FileDiff for the given file
 
 **num\_added()**
 
 Get the number of added lines in this diff.
 
-- :rtype: int
-- :return: The number of added lines
+- **`Returns`: int**  
+    The number of added lines
 
 **num\_removed()**
 
 Get the number of removed lines in this diff.
 
-- :rtype: int
-- :return: The number of removed lines
+- **`Returns`: int**  
+    The number of removed lines
 
 ### FileDiff
 
@@ -321,22 +316,22 @@ The name of the file.
 
 Get the number of changed lines in this diff.
 
-- :rtype: int
-- :return: The number of changed lines in this diff
+- **`Returns`: int**  
+    The number of changed lines in this diff
 
 **num\_added()**
 
 Get the number of added lines in this diff.
 
-- :rtype: int
-- :return: The number of added lines
+- **`Returns`: int**  
+    The number of added lines
 
 **num\_removed()**
 
 Get the number of removed lines in this diff.
 
-- :rtype: int
-- :return: The number of removed lines
+- **`Returns`: int**  
+    The number of removed lines
 
 ### Git
 
@@ -365,10 +360,10 @@ Note that previously created GitFile and GitFolder instances might be broken.
 This is because files can be (re)moved on the new branch. It is therefore
 advised to use the returned root to reconstruct all references.
 
-- :type name: str
-- :param name: The name of the branch to checkout
-- :rtype: GitFolder
-- :return: A reference to the root
+- **`name`: str**  
+    The name of the branch to checkout
+- **`Returns`: GitFolder**  
+    A reference to the root
 
 **clone(loc, address, update=False) - _static_**
 
@@ -378,54 +373,54 @@ Calling this function is identical to calling
 `cd loc && git clone addr` and setting the root to this location.
 Optionally, you could update the repository (when it already exists) by setting `update` to True.
 
-- :type update: bool
-- :param update: whether to update the repository when already cloned
-- :type loc: str
-- :param loc: The location to clone to
-- :type address: str
-- :param address: The location of the repository to clone
-- :rtype: GitFolder
-- :return: A reference to the root
+- **`update`: bool**  
+    whether to update the repository when already cloned
+- **`loc`: str**  
+    The location to clone to
+- **`address`: str**  
+    The location of the repository to clone
+- **`Returns`: GitFolder**  
+    A reference to the root
 
 **get\_head() - _static_**
 
 Get the commit associated with HEAD.
 
-- :rtype: Commit
-- :return: The commit at HEAD
+- **`Returns`: Commit**  
+    The commit at HEAD
 
 **get\_initial\_commits() - _static_**
 
 Get the initial commits of this repository.
 Note that it is possible to have multiple roots, therefore a list is returned.
 
-- :rtype: List\[Commit\]
-- :return: A list of initial commits
+- **`Returns`: List\[Commit\]**  
+    A list of initial commits
 
 **get\_tag(tag) - _static_**
 
 Get the Commit associated with the given tag.
 
-- :type tag: str
-- :param tag: The tag to get the Commit from
-- :rtype: Commit
-- :return The commit associated with the tag
+- **`tag`: str**  
+    The tag to get the Commit from
+- **`Returns`: Commit**  
+    The commit associated with the tag
 
 **get\_tags() - _static_**
 
 Get a list of all the tags of this project.
 These tags can directly be passed to 'Git.getTag(tag)'
 
-- :rtype: List\[str\]
-- :return: A list of all tags, without ordering.
+- **`Returns`: List\[str\]**  
+    A list of all tags, without ordering.
 
 **get\_tags\_by\_commit() - _static_**
 
 Get a list of all the tags and their commit in the following format:
 \[(Commit, tag), ...\], this list can be sorted in chronological order using the builtin sort
 
-- :rtype: (List\[(Commit, str)\])
-- :return: A list of all tags and commits.
+- **`Returns`: (List\[(Commit, str)\])**  
+    A list of all tags and commits.
 
 **set\_root(root) - _static_**
 
@@ -434,10 +429,10 @@ When not using the clone-function, this is the first thing you should call when 
 Please note that if you want to set the root to the current directory,
 a . (period) is expected instead of the empty string.
 
-- :type root: str
-- :param root: The path to the root of the repository.
-- :rtype: GitFolder
-- :return: A reference to the root
+- **`root`: str**  
+    The path to the root of the repository.
+- **`Returns`: GitFolder**  
+    A reference to the root
 
 ### GitFile
 
@@ -470,56 +465,56 @@ The path relative to the repository root
 Get the length of this file in characters.
 If you need the length in lines, please use the GitFile.count() functions.
 
-- :rtype: int
-- :return: The length of this file in characters
+- **`Returns`: int**  
+    The length of this file in characters
 
 **\_\_str\_\_()**
-- :rtype: str
-- :return: The contents of this file
+- **`Returns`: str**  
+    The contents of this file
 
 **at(commit)**
 
 Get the contents of this file at the given commit.
 
-- :type commit: Commit | str
-- :param commit: The commit for which to get the corresponding file content
-- :rtype: str
-- :return: The content of the file
+- **`commit`: Commit | str**  
+    The commit for which to get the corresponding file content
+- **`Returns`: str**  
+    The content of the file
 
 **changes()**
-- :rtype: List\[FileDiff\]
-- :return: For each of the commits in the history, the relevant part of the diff
+- **`Returns`: List\[FileDiff\]**  
+    For each of the commits in the history, the relevant part of the diff
 
 **changes\_from(from\_commit, to\_commit=None)**
 
 Get the diff of this file between two commits.
 By default this is between the HEAD and the specified commit.
 
-- :type from_commit: Commit | str
-- :param from_commit: The from commit of the diff
-- :type to_commit: Commit | str
-- :param to_commit: The to commit of the diff. Defaults to HEAD
-- :rtype: FileDiff
-- :return: The diff between the from and to commit
+- **`from_commit`: Commit | str**  
+    The from commit of the diff
+- **`to_commit`: Commit | str**  
+    The to commit of the diff. Defaults to HEAD
+- **`Returns`: FileDiff**  
+    The diff between the from and to commit
 
 **count(pattern, at=None)**
 
 Count the number of occurrences of the pattern in the file contents.
 This function does not count using a regex, but simple string comparisons.
 
-- :type pattern: str
-- :param pattern: The pattern to count
-- :type at: Commit | str
-- :param at: Optional param to look at a specific version of the file
-- :rtype: int
-- :return: The number of times the pattern occurred
+- **`pattern`: str**  
+    The pattern to count
+- **`at`: Commit | str**  
+    Optional param to look at a specific version of the file
+- **`Returns`: int**  
+    The number of times the pattern occurred
 
 **for\_each\_file(lamb)**
 
 Execute a function for this file and each of its children.
 
-- :type lamb: GitFile -> None
-- :param lamb: The function to execute on each file
+- **`lamb`: GitFile -> None**  
+    The function to execute on each file
 
 **get(path)**
 
@@ -527,45 +522,47 @@ Get a file that is a child of this file.
 When you know that the requested file is a folder or a file,
 you should use the more specific versions of this call.
 
-- :type path: str
-- :param path: The path of the file to get
-- :rtype: _AbsGitFile
-- :return: The file with the given path
-- :raise IOError: When the file is not found
+- **`path`: str**  
+    The path of the file to get
+- **`Returns`: _AbsGitFile**  
+    The file with the given path
+- **`Raises`: IOError**  
+    When the file is not found
 
 **get\_file(path)**
 
 Get a file that is a child of this file.
 
-- :type path: str
-- :param path: The path of the file to get
-- :rtype: GitFile
-- :return: The file with the given path
-- :raise IOError: When the file is not found
+- **`path`: str**  
+    The path of the file to get
+- **`Returns`: GitFile**  
+    The file with the given path
+- **`Raises`: IOError**  
+    When the file is not found
 
 **history()**
 
 Get the history of this file as a list of commits.
 These commits are stored new -> old.
 
-- :rtype: List\[Commit\]
-- :return: A list of all the commits that made changes to this file
+- **`Returns`: List\[Commit\]**  
+    A list of all the commits that made changes to this file
 
 **parent()**
-- :rtype: GitFolder
-- :return: The parent folder of this folder/file
+- **`Returns`: GitFolder**  
+    The parent folder of this folder/file
 
 **regex\_count(pattern, at=None)**
 
 Count the number of occurrences of the pattern in the file contents.
 This function uses a regex, and accepts both compiled and non-compiled regexes.
 
-- :type pattern: re.RegexObject | str
-- :param pattern: The pattern to count
-- :type at: Commit | str
-- :param at: Optional param to look at a specific version of the file
-- :rtype: int
-- :return: The number of times the pattern occurred
+- **`pattern`: re.RegexObject | str**  
+    The pattern to count
+- **`at`: Commit | str**  
+    Optional param to look at a specific version of the file
+- **`Returns`: int**  
+    The number of times the pattern occurred
 
 **status()**
 
@@ -573,8 +570,8 @@ Get a string representing the status of the file.
 The following statuses can be used: M (modified), N (new), D (removed), - (unchanged)
 When multiple statuses apply, return a concatenation of distinct statuses.
 
-- :rtype: str
-- :return: The status of this file
+- **`Returns`: str**  
+    The status of this file
 
 ### GitFolder
 
@@ -605,40 +602,39 @@ The path relative to the repository root
 
 Get a contained folder via direct field access.
 
-- :type name: str
-- :param name: The name of the folder
-- :rtype: GitFolder
-- :return: The folder
-- :raise IOError: When the folder is not found
+- **`name`: str**  
+    The name of the folder
+- **`Returns`: GitFolder**  
+    The folder
+- **`Raises`: IOError**  
+    When the folder is not found
 
 **\_\_str\_\_()**
-- Get the string representation of this folder.
-- This consists of the names of all loders and files separated by a comma.
-- :rtype: str
-- :return: A string representation of this folder.
+- **`Returns`: str**  
+    A string representation of this folder.
 
 **children()**
 
 Get a dictionary of all the children in this folder.
 This list does not contain files excluded in the gitignore.
 
-- :rtype: Dict\[str, GitFile\]
-- :return: A dictionary containing all children
+- **`Returns`: Dict\[str, GitFile\]**  
+    A dictionary containing all children
 
 **files()**
-- :rtype: Dict\[str, GitFile\]
-- :return: All the files contained in this folder
+- **`Returns`: Dict\[str, GitFile\]**  
+    All the files contained in this folder
 
 **folders()**
-- :rtype: Dict\[str, GitFolder\]
-- :return: All the folders contained in this folder
+- **`Returns`: Dict\[str, GitFolder\]**  
+    All the folders contained in this folder
 
 **for\_each\_file(lamb)**
 
 Execute a function for this file and each of its children.
 
-- :type lamb: GitFile -> None
-- :param lamb: The function to execute on each file
+- **`lamb`: GitFile -> None**  
+    The function to execute on each file
 
 **get(path)**
 
@@ -646,33 +642,35 @@ Get a file that is a child of this file.
 When you know that the requested file is a folder or a file,
 you should use the more specific versions of this call.
 
-- :type path: str
-- :param path: The path of the file to get
-- :rtype: _AbsGitFile
-- :return: The file with the given path
-- :raise IOError: When the file is not found
+- **`path`: str**  
+    The path of the file to get
+- **`Returns`: _AbsGitFile**  
+    The file with the given path
+- **`Raises`: IOError**  
+    When the file is not found
 
 **get\_file(path)**
 
 Get a file that is a child of this file.
 
-- :type path: str
-- :param path: The path of the file to get
-- :rtype: GitFile
-- :return: The file with the given path
-- :raise IOError: When the file is not found
+- **`path`: str**  
+    The path of the file to get
+- **`Returns`: GitFile**  
+    The file with the given path
+- **`Raises`: IOError**  
+    When the file is not found
 
 **history()**
 
 Get the history of this file as a list of commits.
 These commits are stored new -> old.
 
-- :rtype: List\[Commit\]
-- :return: A list of all the commits that made changes to this file
+- **`Returns`: List\[Commit\]**  
+    A list of all the commits that made changes to this file
 
 **parent()**
-- :rtype: GitFolder
-- :return: The parent folder of this folder/file
+- **`Returns`: GitFolder**  
+    The parent folder of this folder/file
 
 **status()**
 
@@ -680,6 +678,6 @@ Get a string representing the status of the file.
 The following statuses can be used: M (modified), N (new), D (removed), - (unchanged)
 When multiple statuses apply, return a concatenation of distinct statuses.
 
-- :rtype: str
-- :return: The status of this file
+- **`Returns`: str**  
+    The status of this file
 
