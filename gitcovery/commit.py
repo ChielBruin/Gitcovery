@@ -275,8 +275,8 @@ class Commit(object):
         This is done to reduce the execution time and most notably the memory usage.
         You can specify to load the diffs, but this is not recommended unless you need the diffs for all commits.
 
-        :rtype load_diff: bool
-        :return load_diff: Whether to load the diff data
+        :type load_diff: bool
+        :param load_diff: Whether to load the diff data
         """
         if load_diff:
             warnings.warn('Loading all the diff data can take very much memory for large repositories '
