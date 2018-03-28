@@ -1,5 +1,5 @@
 # Gitcovery reference documentation
-**\[Generated for gitcovery version 0.3.1\]**
+**\[Generated for gitcovery version 0.3.2\]**
 
 
 **TODO** Introduction here
