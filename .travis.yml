@@ -11,3 +11,4 @@ install:
 # Run the tests
 script: 
   - python setup.py test
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./checkdocs.sh; fi'
