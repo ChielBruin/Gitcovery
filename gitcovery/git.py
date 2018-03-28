@@ -47,6 +47,8 @@ class Git(object):
         `cd loc && git clone addr` and setting the root to this location.
         Optionally, you could update the repository (when it already exists) by setting `update` to True.
 
+        Note that this function only works for **public** repositories.
+
         :type update: bool
         :param update: whether to update the repository when already cloned
         :type loc: str
@@ -64,7 +66,7 @@ class Git(object):
         if not os.path.isdir(path):
             cls.call(['clone', address], root=loc)
         elif update:
-            cls.call(['pull'], root=path)
+            cls.update()
         return cls.set_root(path)
 
     @classmethod
@@ -83,6 +85,25 @@ class Git(object):
         """
         cls._verify_root()
         cls.call(['checkout', name])
+        return cls.set_root(cls.root.path)
+
+    @classmethod
+    def update(cls):
+        """
+        Update the repository tho the latest version on the current branch.
+        The effects are the same as calling `git fetch --all && git pull`.
+
+        Note that this function only works for **public** repositories.
+
+        :rtype: GitFolder
+        :return: The root of the repository
+        """
+        cls._verify_root()
+
+        cls.call(['fetch', '--all'])
+        cls.call(['pull'])
+
+        # Update the root as its contents might have changed
         return cls.set_root(cls.root.path)
 
     @classmethod

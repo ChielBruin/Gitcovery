@@ -79,6 +79,7 @@ class BlobDiff(_Diffable):
     def __init__(self, nums, lines):
         """
         Parses the contents of the git diff section describing a single blob of the diff.
+
         :type nums: str
         :param nums: The line numbers for this blob
         :type lines: str

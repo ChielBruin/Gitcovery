@@ -399,6 +399,7 @@ class GitFolder(_AbsGitFile):
         """
         Get the string representation of this folder.
         This consists of the names of all loders and files separated by a comma.
+
         :rtype: str
         :return: A string representation of this folder.
         """

@@ -42,6 +42,11 @@ class FieldDef(object):
         :return: The parsing result
         """
         matcher = self._REGEX_ANNOTATION.search(annotation_str)
+
+        # Void functions without arguments do never match
+        if not matcher:
+            return ''
+
         # The matcher has a description when it is a property. Therefore the docs must be set.
         if matcher.group('desc'):
             self.docs = matcher.group('desc')
@@ -68,8 +73,8 @@ class FunctionDef(object):
     # Regex for matching function definitions
     REGEX = re.compile('(@(?P<annotation>\w*)\s*\n\s{4})?'
                        'def (?P<name>\w+)\s?\((?P<arguments>\w*(,\s\w+)*(?=[,)]))(,\s)?'
-                       '(?P<optional_arguments>\w+=\w+(,\s\w)*)?\):\n\s{8}"""(?P<docs>(\s{8}.*\n)+?\n)?'
-                       '(?P<arg_desc>(\s{8}.*\n)+?)\s{8}"""\n(?P<body>(\s{8}.*\n)*)')
+                       '(?P<optional_arguments>\w+=\w+(,\s\w)*)?\):\n\s{8}"""\n(?P<docs>(\s{8}.*\n)*?)'
+                       '(?P<arg_desc>\n?\s{8}:.*\n(\s{8}.*\n)*?)?\s{8}"""\n(?P<body>(\s{8}.*\n)*)')
     # Regex to match argument descriptions in the docs
     _ARG_DESCRIPTION_REGEX = re.compile('\s*:((((type)|(?P<raises>raise))\s(?P<name>\w+))|(rtype)|):\s*(?P<type>(.*))'
                                         '(\n\s*:((param\s(?P=name))|(return)):\s*(?P<desc>.*))?')
@@ -149,7 +154,7 @@ class FunctionDef(object):
         signature = signature.replace('_', '\\_')
         docs = self.docs
 
-        return ('**%s%s**\n%s%s' % (signature, annotation, docs, self.arg_desc)).replace('[', '\[').replace(']', '\]')
+        return ('**%s%s**  \n%s%s' % (signature, annotation, docs, self.arg_desc)).replace('[', '\[').replace(']', '\]')
 
     @classmethod
     def parse_argument_descriptors(cls, raw):
@@ -162,6 +167,11 @@ class FunctionDef(object):
         :return: A list with the name, type and description of all arguments
         """
         res = []
+
+        # Void function without arguments
+        if not raw:
+            return ''
+
         for desc_matcher in cls._ARG_DESCRIPTION_REGEX.finditer(raw):
             if desc_matcher.group('name'):
                 if desc_matcher.group('raises'):
