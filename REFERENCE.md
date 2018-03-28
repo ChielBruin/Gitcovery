@@ -62,26 +62,20 @@ The name of the author.
 
 
 #### Functions
-**list() - _static_**
-
+**list() - _static_**  
 Get a list of all authors from the repository.
-
 - **`Returns`: List\[Author\]**  
     A list of all authors
 
-**register\_commit(commit)**
-
+**register\_commit(commit)**  
 Register a commit to this author.
-
 - **`commit`: Commit**  
     The commit to register
 - **`Returns`: bool**  
     True when registration was successful, False otherwise
 
-**register\_email(email)**
-
+**register\_email(email)**  
 Register a email address to this author.
-
 - **`email`: str**  
     The commit to register
 - **`Returns`: bool**  
@@ -110,24 +104,18 @@ The lines that were removed in this blob.
 
 
 #### Functions
-**\_\_len\_\_()**
-
+**\_\_len\_\_()**  
 Get the number of changed lines in this diff.
-
 - **`Returns`: int**  
     The number of changed lines in this diff
 
-**num\_added()**
-
+**num\_added()**  
 Get the number of added lines in this diff.
-
 - **`Returns`: int**  
     The number of added lines
 
-**num\_removed()**
-
+**num\_removed()**  
 Get the number of removed lines in this diff.
-
 - **`Returns`: int**  
     The number of removed lines
 
@@ -181,72 +169,59 @@ The commit title
 
 
 #### Functions
-**\_\_eq\_\_(other)**
-
+**\_\_eq\_\_(other)**  
 Two Commits are equal when their hashes match.
-
 - **`other`: object**  
     The object to compare with
 - **`Returns`: bool**  
     True when they are equal, False otherwise
 
-**\_\_lt\_\_(other)**
-
+**\_\_lt\_\_(other)**  
 Compare this commit with another based on the date of the commit.
-
 - **`other`: Commit**  
     The object to compare to
 - **`Returns`: bool**  
     True when this commit is older than the given commit, False otherwise
 
-**changes(, file\_name=None)**
-
+**changes(, file\_name=None)**  
 Get the diff for this commit.
 When file_name is given, only the diff for that file is returned.
-
 - **`file_name`: str**  
     Optional file name to get the diff from
 - **`Returns`: _DiffContainer**  
     The diff of this commit
 
-**for\_each\_parent(func)**
-
+**for\_each\_parent(func)**  
 Execute a function for this commit and all its parents (AKA the tree that this commit is part of).
-
 - **`func`: Commit -> None**  
     The function to apply for each parent recursively
 
-**get\_commit(sha) - _static_**
-
+**get\_commit(sha) - _static_**  
 Get a commit with the given hash from the cache.
 When it is not present in the cache, a new commit is created.
-
 - **`sha`: str**  
     The SHA hash of the commit to get
 - **`Returns`: Commit**  
     The requested Commit object
 
-**load()**
-
+**load()**  
 Load the data for this commit.
 This function calls 'git show' and parses the output.
-
 - **`Returns`: bool**  
     True when successfully loaded, False when already loaded
 
-**load\_all(, load\_diff=False) - _static_**
-
+**load\_all(, load\_diff=False) - _static_**  
 Preload all the metadata of all commits.
 This method should be used when loading a large number of commits,
 as a significant speedup is achieved in this case.
 By default the meatadata does not include the diffs.
 This is done to reduce the execution time and most notably the memory usage.
 You can specify to load the diffs, but this is not recommended unless you need the diffs for all commits.
-
 - **`load_diff`: bool**  
     Whether to load the diff data
 
-**unload()**
+**unload()**  
+Unload all the cached data for this commit.
 
 
 ### Diff
@@ -262,40 +237,30 @@ The files and their diffs stored in this diff
 
 
 #### Functions
-**\_\_len\_\_()**
-
+**\_\_len\_\_()**  
 Get the number of changed lines in this diff.
-
 - **`Returns`: int**  
     The number of changed lines in this diff
 
-**add(file\_diff)**
-
+**add(file\_diff)**  
 Add a file diff to this diff.
-
 - **`file_diff`: FileDiff**  
     The file diff to add
 
-**get\_file(fname)**
-
+**get\_file(fname)**  
 Get the FileDiff of the file with the given name.
-
 - **`fname`: str**  
     The filename to get the diff for
 - **`Returns`: FileDiff**  
     The FileDiff for the given file
 
-**num\_added()**
-
+**num\_added()**  
 Get the number of added lines in this diff.
-
 - **`Returns`: int**  
     The number of added lines
 
-**num\_removed()**
-
+**num\_removed()**  
 Get the number of removed lines in this diff.
-
 - **`Returns`: int**  
     The number of removed lines
 
@@ -312,24 +277,18 @@ The name of the file.
 
 
 #### Functions
-**\_\_len\_\_()**
-
+**\_\_len\_\_()**  
 Get the number of changed lines in this diff.
-
 - **`Returns`: int**  
     The number of changed lines in this diff
 
-**num\_added()**
-
+**num\_added()**  
 Get the number of added lines in this diff.
-
 - **`Returns`: int**  
     The number of added lines
 
-**num\_removed()**
-
+**num\_removed()**  
 Get the number of removed lines in this diff.
-
 - **`Returns`: int**  
     The number of removed lines
 
@@ -352,27 +311,25 @@ The root of the repository, `None` when the root is not set.
 
 
 #### Functions
-**checkout(name) - _static_**
-
+**checkout(name) - _static_**  
 Checkout a specific branch in the repository.
 Calling this function is identical to calling `git checkout name` and setting the root again.
 Note that previously created GitFile and GitFolder instances might be broken.
 This is because files can be (re)moved on the new branch. It is therefore
 advised to use the returned root to reconstruct all references.
-
 - **`name`: str**  
     The name of the branch to checkout
 - **`Returns`: GitFolder**  
     A reference to the root
 
-**clone(loc, address, update=False) - _static_**
-
+**clone(loc, address, update=False) - _static_**  
 Clone a git repository to the specified location and return a reference to the root.
 When there is already a folder with the correct name at that location, cloning is skipped.
 Calling this function is identical to calling
 `cd loc && git clone addr` and setting the root to this location.
 Optionally, you could update the repository (when it already exists) by setting `update` to True.
 
+Note that this function only works for **public** repositories.
 - **`update`: bool**  
     whether to update the repository when already cloned
 - **`loc`: str**  
@@ -382,57 +339,53 @@ Optionally, you could update the repository (when it already exists) by setting 
 - **`Returns`: GitFolder**  
     A reference to the root
 
-**get\_head() - _static_**
-
+**get\_head() - _static_**  
 Get the commit associated with HEAD.
-
 - **`Returns`: Commit**  
     The commit at HEAD
 
-**get\_initial\_commits() - _static_**
-
+**get\_initial\_commits() - _static_**  
 Get the initial commits of this repository.
 Note that it is possible to have multiple roots, therefore a list is returned.
-
 - **`Returns`: List\[Commit\]**  
     A list of initial commits
 
-**get\_tag(tag) - _static_**
-
+**get\_tag(tag) - _static_**  
 Get the Commit associated with the given tag.
-
 - **`tag`: str**  
     The tag to get the Commit from
 - **`Returns`: Commit**  
     The commit associated with the tag
 
-**get\_tags() - _static_**
-
+**get\_tags() - _static_**  
 Get a list of all the tags of this project.
 These tags can directly be passed to 'Git.getTag(tag)'
-
 - **`Returns`: List\[str\]**  
     A list of all tags, without ordering.
 
-**get\_tags\_by\_commit() - _static_**
-
+**get\_tags\_by\_commit() - _static_**  
 Get a list of all the tags and their commit in the following format:
 \[(Commit, tag), ...\], this list can be sorted in chronological order using the builtin sort
-
 - **`Returns`: (List\[(Commit, str)\])**  
     A list of all tags and commits.
 
-**set\_root(root) - _static_**
-
+**set\_root(root) - _static_**  
 Set the root of the repository to the specified location.
 When not using the clone-function, this is the first thing you should call when using the module.
 Please note that if you want to set the root to the current directory,
 a . (period) is expected instead of the empty string.
-
 - **`root`: str**  
     The path to the root of the repository.
 - **`Returns`: GitFolder**  
     A reference to the root
+
+**update() - _static_**  
+Update the repository tho the latest version on the current branch.
+The effects are the same as calling `git fetch --all && git pull`.
+
+Note that this function only works for **public** repositories.
+- **`Returns`: GitFolder**  
+    The root of the repository
 
 ### GitFile
 
@@ -460,36 +413,30 @@ The path relative to the repository root
 
 
 #### Functions
-**\_\_len\_\_()**
-
+**\_\_len\_\_()**  
 Get the length of this file in characters.
 If you need the length in lines, please use the GitFile.count() functions.
-
 - **`Returns`: int**  
     The length of this file in characters
 
-**\_\_str\_\_()**
+**\_\_str\_\_()**  
 - **`Returns`: str**  
     The contents of this file
 
-**at(commit)**
-
+**at(commit)**  
 Get the contents of this file at the given commit.
-
 - **`commit`: Commit | str**  
     The commit for which to get the corresponding file content
 - **`Returns`: str**  
     The content of the file
 
-**changes()**
+**changes()**  
 - **`Returns`: List\[FileDiff\]**  
     For each of the commits in the history, the relevant part of the diff
 
-**changes\_from(from\_commit, to\_commit=None)**
-
+**changes\_from(from\_commit, to\_commit=None)**  
 Get the diff of this file between two commits.
 By default this is between the HEAD and the specified commit.
-
 - **`from_commit`: Commit | str**  
     The from commit of the diff
 - **`to_commit`: Commit | str**  
@@ -497,11 +444,9 @@ By default this is between the HEAD and the specified commit.
 - **`Returns`: FileDiff**  
     The diff between the from and to commit
 
-**count(pattern, at=None)**
-
+**count(pattern, at=None)**  
 Count the number of occurrences of the pattern in the file contents.
 This function does not count using a regex, but simple string comparisons.
-
 - **`pattern`: str**  
     The pattern to count
 - **`at`: Commit | str**  
@@ -509,19 +454,15 @@ This function does not count using a regex, but simple string comparisons.
 - **`Returns`: int**  
     The number of times the pattern occurred
 
-**for\_each\_file(lamb)**
-
+**for\_each\_file(lamb)**  
 Execute a function for this file and each of its children.
-
 - **`lamb`: GitFile -> None**  
     The function to execute on each file
 
-**get(path)**
-
+**get(path)**  
 Get a file that is a child of this file.
 When you know that the requested file is a folder or a file,
 you should use the more specific versions of this call.
-
 - **`path`: str**  
     The path of the file to get
 - **`Returns`: _AbsGitFile**  
@@ -529,10 +470,8 @@ you should use the more specific versions of this call.
 - **`Raises`: IOError**  
     When the file is not found
 
-**get\_file(path)**
-
+**get\_file(path)**  
 Get a file that is a child of this file.
-
 - **`path`: str**  
     The path of the file to get
 - **`Returns`: GitFile**  
@@ -540,23 +479,19 @@ Get a file that is a child of this file.
 - **`Raises`: IOError**  
     When the file is not found
 
-**history()**
-
+**history()**  
 Get the history of this file as a list of commits.
 These commits are stored new -> old.
-
 - **`Returns`: List\[Commit\]**  
     A list of all the commits that made changes to this file
 
-**parent()**
+**parent()**  
 - **`Returns`: GitFolder**  
     The parent folder of this folder/file
 
-**regex\_count(pattern, at=None)**
-
+**regex\_count(pattern, at=None)**  
 Count the number of occurrences of the pattern in the file contents.
 This function uses a regex, and accepts both compiled and non-compiled regexes.
-
 - **`pattern`: re.RegexObject | str**  
     The pattern to count
 - **`at`: Commit | str**  
@@ -564,12 +499,10 @@ This function uses a regex, and accepts both compiled and non-compiled regexes.
 - **`Returns`: int**  
     The number of times the pattern occurred
 
-**status()**
-
+**status()**  
 Get a string representing the status of the file.
 The following statuses can be used: M (modified), N (new), D (removed), - (unchanged)
 When multiple statuses apply, return a concatenation of distinct statuses.
-
 - **`Returns`: str**  
     The status of this file
 
@@ -598,10 +531,8 @@ The path relative to the repository root
 
 
 #### Functions
-**\_\_getattr\_\_(name)**
-
+**\_\_getattr\_\_(name)**  
 Get a contained folder via direct field access.
-
 - **`name`: str**  
     The name of the folder
 - **`Returns`: GitFolder**  
@@ -609,39 +540,35 @@ Get a contained folder via direct field access.
 - **`Raises`: IOError**  
     When the folder is not found
 
-**\_\_str\_\_()**
+**\_\_str\_\_()**  
+Get the string representation of this folder.
+This consists of the names of all loders and files separated by a comma.
 - **`Returns`: str**  
     A string representation of this folder.
 
-**children()**
-
+**children()**  
 Get a dictionary of all the children in this folder.
 This list does not contain files excluded in the gitignore.
-
 - **`Returns`: Dict\[str, GitFile\]**  
     A dictionary containing all children
 
-**files()**
+**files()**  
 - **`Returns`: Dict\[str, GitFile\]**  
     All the files contained in this folder
 
-**folders()**
+**folders()**  
 - **`Returns`: Dict\[str, GitFolder\]**  
     All the folders contained in this folder
 
-**for\_each\_file(lamb)**
-
+**for\_each\_file(lamb)**  
 Execute a function for this file and each of its children.
-
 - **`lamb`: GitFile -> None**  
     The function to execute on each file
 
-**get(path)**
-
+**get(path)**  
 Get a file that is a child of this file.
 When you know that the requested file is a folder or a file,
 you should use the more specific versions of this call.
-
 - **`path`: str**  
     The path of the file to get
 - **`Returns`: _AbsGitFile**  
@@ -649,10 +576,8 @@ you should use the more specific versions of this call.
 - **`Raises`: IOError**  
     When the file is not found
 
-**get\_file(path)**
-
+**get\_file(path)**  
 Get a file that is a child of this file.
-
 - **`path`: str**  
     The path of the file to get
 - **`Returns`: GitFile**  
@@ -660,24 +585,20 @@ Get a file that is a child of this file.
 - **`Raises`: IOError**  
     When the file is not found
 
-**history()**
-
+**history()**  
 Get the history of this file as a list of commits.
 These commits are stored new -> old.
-
 - **`Returns`: List\[Commit\]**  
     A list of all the commits that made changes to this file
 
-**parent()**
+**parent()**  
 - **`Returns`: GitFolder**  
     The parent folder of this folder/file
 
-**status()**
-
+**status()**  
 Get a string representing the status of the file.
 The following statuses can be used: M (modified), N (new), D (removed), - (unchanged)
 When multiple statuses apply, return a concatenation of distinct statuses.
-
 - **`Returns`: str**  
     The status of this file
 
