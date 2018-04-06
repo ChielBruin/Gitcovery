@@ -183,7 +183,7 @@ Compare this commit with another based on the date of the commit.
 - **`Returns`: bool**  
     True when this commit is older than the given commit, False otherwise
 
-**changes(, file\_name=None)**  
+**changes(file\_name=None)**  
 Get the diff for this commit.
 When file_name is given, only the diff for that file is returned.
 - **`file_name`: str**  
@@ -210,7 +210,7 @@ This function calls 'git show' and parses the output.
 - **`Returns`: bool**  
     True when successfully loaded, False when already loaded
 
-**load\_all(, load\_diff=False) - _static_**  
+**load\_all(load\_diff=False) - _static_**  
 Preload all the metadata of all commits.
 This method should be used when loading a large number of commits,
 as a significant speedup is achieved in this case.

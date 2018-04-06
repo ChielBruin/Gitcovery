@@ -148,7 +148,10 @@ class FunctionDef(object):
         """
         annotation = ' - _static_' if (self.annotation == 'classmethod' or self.annotation == 'staticmethod') else ''
         if self.optional_arguments:
-            signature = '%s(%s, %s)' % (self.name, self.arguments, self.optional_arguments)
+            if self.arguments:
+                signature = '%s(%s, %s)' % (self.name, self.arguments, self.optional_arguments)
+            else:
+                signature = '%s(%s)' % (self.name, self.optional_arguments)
         else:
             signature = '%s(%s)' % (self.name, self.arguments)
         signature = signature.replace('_', '\\_')
