@@ -61,30 +61,34 @@ class Commit(object):
                 'git show output could not be matched for: %s\n' % self.sha +
                 'Please report the commit hash and repository so I can improve the regex')
 
-        # Parse parents
-        for sha in matcher.group('parents').split(' '):
-            if sha == '':
-                continue
-            self._parents.append(self.get_commit(sha))
+        try:
+            # Parse parents
+            for sha in matcher.group('parents').split(' '):
+                if sha == '':
+                    continue
+                self._parents.append(self.get_commit(sha))
 
-        # Parse authors
-        self._author = Author.get_author(matcher.group('author'), email=matcher.group('authorMail'))
-        self._commit = Author.get_author(matcher.group('commit'), email=matcher.group('commitMail'))
+            # Parse authors
+            self._author = Author.get_author(matcher.group('author'), email=matcher.group('authorMail'))
+            self._commit = Author.get_author(matcher.group('commit'), email=matcher.group('commitMail'))
 
-        self._author.register_commit(self)
+            self._author.register_commit(self)
 
-        self._authorDate = dp.parse(matcher.group('authorDate'))
-        self._commitDate = dp.parse(matcher.group('commitDate'))
+            self._authorDate = dp.parse(matcher.group('authorDate'))
+            self._commitDate = dp.parse(matcher.group('commitDate'))
 
-        # Parse the commit contents
-        self._title = matcher.group('title')
-        self._msg = matcher.group('message').strip() if matcher.group('message') else ''
+            # Parse the commit contents
+            self._title = matcher.group('title')
+            self._msg = matcher.group('message').strip() if matcher.group('message') else ''
 
-        # Parse the diff if provided
-        if load_diff:
-            self._diff = Diff(matcher.group('diff'))
-        else:
-            self._diff = None
+            # Parse the diff if provided
+            if load_diff:
+                self._diff = Diff(matcher.group('diff'))
+            else:
+                self._diff = None
+        except Exception as e:
+            raise Exception('Cannot construct commit %s from the given output' % self.sha +
+                            'Please report the commit hash and repository so I can fix the problem', e)
 
     def _load_diff(self):
         """
