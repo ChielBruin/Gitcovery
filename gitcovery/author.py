@@ -70,7 +70,7 @@ class Author(object):
         """
         if cls._authors:
             return
-        out = Git.call(['log', '--format=%aN%n%aE%n%cN%n%cE%n%H%n'])
+        out = Git.call(['log', '--all', '--format=%aN%n%aE%n%cN%n%cE%n%H%n'])
 
         def register(name, email):
             if name not in cls._authors:
@@ -111,7 +111,12 @@ class Author(object):
         name = name.strip()
         cls._load_authors()
 
+        # If not known, try reload
         if name not in cls._authors:
+            cls._load_authors()
+
+        # If already reloaded and still not found, throw exception
+        if cls._authors[name] is None:
             raise Exception(
                 'Author <%s> not known' % name)
 
