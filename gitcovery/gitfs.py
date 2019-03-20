@@ -254,8 +254,13 @@ class GitFile(_AbsGitFile):
         :return: The contents of this file
         """
         if not self._contents:
-            with open(self.path) as f:
-                self._contents = f.read()
+            (encoding, error_policy) = Git.get_decode_settings()
+            try:
+                with open(self.path, 'r+b') as f:
+                    self._contents = f.read().decode(encoding, errors=error_policy)
+            except UnicodeDecodeError as e:
+                e.reason += '\nTry changing the default decoding policy using \'Git.set_decode_settings()\''
+                raise e
         return self._contents
 
     def __len__(self):

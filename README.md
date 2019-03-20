@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/ChielBruin/Gitcovery.svg?branch=master)](https://travis-ci.org/ChielBruin/Gitcovery)
 
 A Python module that allows you to explore git repositories. It abstracts over the git system, hiding the command-line arguments behind simple function calls and objects. This makes the module useful when you want to run analyses on git repositories.  
-As an example of its simplicity, only 6 lines of Python code are needed to create a graph that shows evolution of the number of lines in this README-file over time. This includes the two lines that are always needed to draw any graph at all. Try running `python examples/graphs.py` from the root of this repository to check it out, or take a look at the other examples in the `exmples` folder.
+As an example of its simplicity, only 6 lines of Python code are needed to create a graph that shows evolution of the number of lines in this README-file over time. This includes the two lines that are always needed to draw any graph at all. Try running `python examples/filesizePlot/filesizePlot.py` from the root of this repository to check it out, or take a look at the other examples in the `exmples` folder.
 
 ## Usage
 This module wraps the git repository in the following ways, making it simple to get data from it without parsing the commandline output.

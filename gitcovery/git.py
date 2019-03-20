@@ -155,6 +155,17 @@ class Git(object):
         return cls._char_encoding, cls._decode_error_policy
 
     @classmethod
+    def get_decode_settings(cls):
+        """
+        Get the settings of the decoder for raw git output.
+        See https://docs.python.org/2/library/codecs.html#codec-base-classes for valid error policies.
+
+        :rtype: (str, str)
+        :return: A tuple containing the encoding and error policy
+        """
+        return cls._char_encoding, cls._decode_error_policy
+
+    @classmethod
     def call(cls, cmds, root=None, kill_on_error=True):
         """
         Call the git subsystem via the command line and return the output.
@@ -185,6 +196,9 @@ class Git(object):
                 exit(-1)
             else:
                 raise IOError(e)
+        except UnicodeDecodeError as e:
+            e.reason += '\nTry changing the default decoding policy using \'Git.set_decode_settings()\''
+            raise e
 
     @classmethod
     def get_tags(cls):

@@ -1,5 +1,5 @@
 # Gitcovery reference documentation
-**\[Generated for gitcovery version 0.3.2\]**
+**\[Generated for gitcovery version 0.3.3\]**
 
 
 **TODO** Introduction here
@@ -338,6 +338,12 @@ Note that this function only works for **public** repositories.
     The location of the repository to clone
 - **`Returns`: GitFolder**  
     A reference to the root
+
+**get\_decode\_settings() - _static_**  
+Get the settings of the decoder for raw git output.
+See https://docs.python.org/2/library/codecs.html#codec-base-classes for valid error policies.
+- **`Returns`: (str, str)**  
+    A tuple containing the encoding and error policy
 
 **get\_head() - _static_**  
 Get the commit associated with HEAD.
